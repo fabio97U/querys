@@ -1,0 +1,16 @@
+declare @codper int = 224032
+declare @codcil int = 122
+declare @codins_Inscripcion int = 0
+declare @codins_uonline int = 0
+
+select @codins_Inscripcion = ins_codigo from ra_ins_inscripcion where ins_codper =@codper and ins_codcil = @codcil
+select @codins_uonline = ins_codigo from uonline.dbo.ra_ins_inscripcion where ins_codper =@codper and ins_codcil = @codcil
+
+select * from ra_ins_inscripcion where ins_codper =@codper and ins_codcil = @codcil
+select * from uonline.dbo.ra_ins_inscripcion where ins_codper =@codper and ins_codcil = @codcil
+
+select mai_codins, mai_codmat, hpl_descripcion from ra_mai_mat_inscritas  inner join  uonline.dbo.ra_hpl_horarios_planificacion as hpl on hpl.hpl_codigo = mai_codhpl where mai_codins in (@codins_Inscripcion, @codins_uonline) 
+select mai_codins, mai_codmat, hpl_descripcion from ra_mai_mat_inscritas_especial inner join  uonline.dbo.ra_hpl_horarios_planificacion as hpl on hpl.hpl_codigo = mai_codhor where mai_codins in (@codins_Inscripcion, @codins_uonline) 
+
+select mai_codins, mai_codmat, hpl_descripcion from uonline.dbo.ra_mai_mat_inscritas inner join  uonline.dbo.ra_hpl_horarios_planificacion as hpl on hpl.hpl_codigo = mai_codhpl where mai_codins in (@codins_Inscripcion, @codins_uonline) 
+select mai_codins, mai_codmat, hpl_descripcion from uonline.dbo.ra_mai_mat_inscritas_especial inner join uonline.dbo.ra_hpl_horarios_planificacion as hpl on hpl.hpl_codigo = hpl_codigo where mai_codins in (@codins_Inscripcion, @codins_uonline)
