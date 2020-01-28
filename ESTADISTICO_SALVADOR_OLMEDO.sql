@@ -79,3 +79,17 @@ begin
 	) as t
 	return @cantidad
 end
+
+--select tab.esc_codigo, tab.esc_nombre,count(distinct mai_codmat) '01', count(1) 'Cant. Sec.'
+--from (
+select distinct hpl_tipo_materia, mai_codmat, mat_nombre, esc_codigo, esc_nombre, mai_uv, hpl_descripcion--, count(1) 'cant sec'
+from ra_hpl_horarios_planificacion
+inner join ra_mat_materias on mat_codigo = hpl_codmat
+inner join ra_mai_mat_inscritas on mai_codmat = mat_codigo
+inner join ra_esc_escuelas on esc_codigo = mat_codesc
+where hpl_codcil = 116 and hpl_codesc <> 10
+and esc_nombre = 'NEGOCIOS'
+and hpl_codmat not in 
+(select distinct hpl_codmat from ra_hpl_horarios_planificacion inner join ra_mai_mat_inscritas on mai_codhpl = hpl_codigo where hpl_codcil <> 116 and hpl_codcil < 116)
+--) as tab
+--group by /*hpl_tipo_materia, mai_codmat, mat_nombre, mai_uv, */tab.esc_codigo, tab.esc_nombre
