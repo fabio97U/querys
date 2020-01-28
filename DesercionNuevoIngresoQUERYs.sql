@@ -451,7 +451,7 @@ begin
 		fetch next from mcursor into @mattu_codigo
 		while @@FETCH_STATUS = 0 
 		begin
-			insert into @tbl_detalle_inscritos (codmattu, mai_codmat, Inscritos_NuevoIngreso, Inscritos_totales)
+				insert into @tbl_detalle_inscritos (codmattu, mai_codmat, Inscritos_NuevoIngreso, Inscritos_totales, carreras_tutoradas)
 			exec ra_mattu_materias_tutoradas_detalle_general @mattu_codigo
 			fetch next from mcursor into @mattu_codigo
 		end      
