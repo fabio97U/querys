@@ -163,11 +163,11 @@ begin
 	declare @ceros_maximos_tiene_que_tener int
 	set @ceros_maximos_tiene_que_tener = 5 - @evaluacion
 	--select --/*not_codmai,*/ 
-	----@n1 = round([1],2) /*'1°'*/, 
-	----@n2 = round([2],2) /*'2°'*/, 
-	----@n3 = round([3],2)/*'3°'*/, 
-	----@n4 = round([4],2)/*'4°'*/, 
-	----@n5 = round([5],2)/*'5°'*/, 
+	----@n1 = round([1],2) /*'1ï¿½'*/, 
+	----@n2 = round([2],2) /*'2ï¿½'*/, 
+	----@n3 = round([3],2)/*'3ï¿½'*/, 
+	----@n4 = round([4],2)/*'4ï¿½'*/, 
+	----@n5 = round([5],2)/*'5ï¿½'*/, 
 	----@prom = round(((([1]) +([2])+([3]) +([4])+([5]))/5),2) /*'Prom'*/*/
 	--from (
 	--	select not_codmai, not_nota, pom_codpon from ra_not_notas 
@@ -200,13 +200,14 @@ inner join pla_emp_empleado  on hpl_codemp = emp_codigo
 where hpl_codcil = 119 and hpl_codmat like '%IED-D%'*/
 
 
-alter procedure [dbo].[ra_mattu_materias_tutoradas_detalle_general]
+ALTER procedure [dbo].[ra_mattu_materias_tutoradas_detalle_general]
     -- =============================================
     -- Author:      <Fabio>
     -- Create date: <2020-01-24>
     -- Description: <Devuele el datelle GENERAL y consolidado de la materia tutorada @codmattu>
     -- =============================================
-    -- ra_mattu_materias_tutoradas_detalle_general 191
+    -- ra_mattu_materias_tutoradas_detalle_general 155--excluir
+    -- ra_mattu_materias_tutoradas_detalle_general 179--incluir
     @codmattu int = 0
 as
 begin
@@ -230,10 +231,11 @@ begin
 		inner join ra_matturd_materias_tutoradas_restricciones_detalle on mattur_codigo = matturd_codmattur
 		--inner join ra_mattur_materias_tutoradas_restricciones on matturd_codmattur = mattur_codigo
 		where mattu_codigo = @codmattu--87--@codmattu
+
 		if(isnull(@codmattu_tiene_restriccion, 0) = 0)
 		begin
 			print '@codmattu: '+cast(@codmattu as varchar(5))+'('+cast(@codmat as varchar(50))+'), NO TIENEN RESTRICCIONES'
-			insert into @codpers
+			insert into @codpers (codper)
 			select distinct alc_codper
 			from ra_not_notas 
 			inner join ra_mai_mat_inscritas on mai_codigo = not_codmai
@@ -259,7 +261,7 @@ begin
 			if @excluir = 1
 			begin
 				print 'se tiene que excluir las siguientes carreras NOT IN'
-				insert into @codpers
+				insert into @codpers (codper)
 				select distinct alc_codper
 				from ra_not_notas 
 				inner join ra_mai_mat_inscritas on mai_codigo = not_codmai
@@ -275,7 +277,7 @@ begin
 			if @incluir = 1
 			begin
 				print 'se tiene que incluir las siguientes carreras IN'
-				insert into @codpers
+				insert into @codpers (codper)
 				select distinct alc_codper
 				from ra_not_notas 
 				inner join ra_mai_mat_inscritas on mai_codigo = not_codmai
@@ -290,6 +292,7 @@ begin
 			end
 			--select * from @codcar_restrincciones
 		end
+
 		---------------------------*---------------------------END *SE REALIZA LAS EXLUCIONES O INCLUSIONES DE CARNETS
 		select top 1 @codmattu codmattu, tabla.mai_codmat, tabla.TotalNuevoIngreso 'Inscritos NuevoIngreso', 
 		(
@@ -301,7 +304,19 @@ begin
 			inner join ra_pla_planes on pla_codigo = alc_codpla and mai_codpla = pla_codigo
 			inner join ra_mattu_materias_tutoradas on mattu_codhpl = mai_codhpl
 			where ins_codcil = @codcil and mai_codhpl = @codhpl
-		) 'Inscritos totales de la sección'
+		) 'Inscritos totales de la secciÃ³n',
+		stuff((
+			select distinct concat(',', car_identificador)
+			from ra_ins_inscripcion 
+			inner join ra_mai_mat_inscritas on ins_codigo = mai_codins
+			inner join ra_per_personas on per_codigo = ins_codper and per_codcil_ingreso = @codcil
+			inner join ra_alc_alumnos_carrera on alc_codper = per_codigo
+			inner join ra_pla_planes on pla_codigo = alc_codpla and mai_codpla = pla_codigo
+			inner join ra_mattu_materias_tutoradas on mattu_codhpl = mai_codhpl
+			inner join ra_car_carreras on car_codigo = pla_codcar
+			where ins_codcil = @codcil and mai_codhpl = @codhpl  and per_codigo in (select codper from @codpers) 
+			for xml path('')),1,1,''
+		) as 'Carreras Tut.'
 		from (
 			select mai_codmat, count(1) 'TotalNuevoIngreso' from (
 				select mai_codmat, case mai_estado when 'R' then 1 else 0 end as ret_mat
@@ -343,7 +358,7 @@ ALTER procedure [dbo].[sp_ra_mattu_materias_tutoradas]
 	@buscar varchar(1024) = ''
 as
 begin
-	declare @tbl_detalle_inscritos as table(codmattu int, mai_codmat varchar(36), Inscritos_NuevoIngreso int, Inscritos_totales int)
+	declare @tbl_detalle_inscritos as table(codmattu int, mai_codmat varchar(36), Inscritos_NuevoIngreso int, Inscritos_totales int, carreras_tutoradas varchar(64))
 	declare @mattu_codigo int
 
 	if @opcion = 1--Muestra
@@ -355,7 +370,7 @@ begin
 		fetch next from mcursor into @mattu_codigo
 		while @@FETCH_STATUS = 0 
 		begin
-			insert into @tbl_detalle_inscritos (codmattu, mai_codmat, Inscritos_NuevoIngreso, Inscritos_totales)
+			insert into @tbl_detalle_inscritos (codmattu, mai_codmat, Inscritos_NuevoIngreso, Inscritos_totales, carreras_tutoradas)
 			exec ra_mattu_materias_tutoradas_detalle_general @mattu_codigo
 			fetch next from mcursor into @mattu_codigo
 		end      
@@ -363,7 +378,7 @@ begin
 		deallocate mcursor
 
 		select codmattu, codhpl, codmat, isnull(Inscritos_NuevoIngreso, 0) Inscritos_NuevoIngreso, isnull(Inscritos_totales, 0) Inscritos_totales, Materia, Seccion, codemp_titular, Docente_titular, codemp_tutor, Docente_tutor, mattu_codemp, [Tipo materia], Aula, Facultad, 
-		case dias when 'Lu-Mar-Mie-Jue-Vie-Sab-Dom-' then 'Virtual' else dias end dias, horario
+		case dias when 'Lu-Mar-Mie-Jue-Vie-Sab-Dom-' then 'Virtual' else dias end dias, horario, carreras_tutoradas
 		from (
 				select distinct mattu_codigo 'codmattu', hpl_codigo 'codhpl', hpl_codmat 'codmat', mat_nombre 'Materia', hpl_descripcion 'Seccion',emp_codigo 'codemp_titular', 
 				emp_apellidos_nombres 'Docente_titular',isnull(mattu_codemp,0) codemp_tutor,  
@@ -378,6 +393,7 @@ begin
 					case when hpl_domingo = 'S' then 'Dom-' ELSE '' END) dias, man_nomhor horario,
 					
 					Inscritos_NuevoIngreso, Inscritos_totales
+					, carreras_tutoradas
 				from ra_hpl_horarios_planificacion  
 				inner join ra_mat_materias on mat_codigo = hpl_codmat
 				inner join ra_esc_escuelas  on esc_codigo = mat_codesc 
@@ -444,7 +460,7 @@ begin
 
 		select 
 		case dias when 'Lu-Mar-Mie-Jue-Vie-Sab-Dom-' then 'Virtual' else dias end Dias, Horario, codmat 'Codigo de materia', isnull(Inscritos_NuevoIngreso, 0) Inscritos_NuevoIngreso, isnull(Inscritos_totales, 0) Inscritos_totales
-		, Materia, Seccion, Docente_titular 'Docente titular', Docente_tutor 'Docente tutor', [Tipo materia]
+		, Materia, Seccion, Docente_titular 'Docente titular', Docente_tutor 'Docente tutor', [Tipo materia], carreras_tutoradas
 		from (
 				select distinct mattu_codigo 'codmattu', hpl_codigo 'codhpl', hpl_codmat 'codmat', mat_nombre 'Materia', hpl_descripcion 'Seccion',emp_codigo 'codemp_titular', 
 				emp_apellidos_nombres 'Docente_titular',isnull(mattu_codemp,0) codemp_tutor,  
@@ -458,6 +474,7 @@ begin
 					case when hpl_sabado = 'S' then 'Sab-' ELSE '' END + 
 					case when hpl_domingo = 'S' then 'Dom-' ELSE '' END) dias, man_nomhor horario,
 					Inscritos_NuevoIngreso, Inscritos_totales
+					, carreras_tutoradas
 				from ra_hpl_horarios_planificacion  
 				inner join ra_mat_materias on mat_codigo = hpl_codmat
 				inner join ra_esc_escuelas  on esc_codigo = mat_codesc 
@@ -638,12 +655,12 @@ begin
 		end
 		---------------------------*---------------------------END *SE REALIZA LAS EXLUCIONES O INCLUSIONES DE CARNETS*
 
-		select distinct row_number() over(order by per_apellidos, per_nombres) 'N°', mai_codmat 'codmat',/*@evaluacion 'Evaluacion',  mat_nombre 'Materia',*/ per_carnet 'Carnet', per_apellidos 'Apellidos', per_nombres 'Nombres',case mai_estado when 'I' then 'Inscrita' when 'R' then 'Retirada' else 'Desconocido' end 'Estado', case [deserto] when 0 then 'No' when 1 then 'Si' end 'Deserto',
-		round((case when @evaluacion >= 1 then isnull([1],0) else 0 end),2) '1°', 
-		round((case when @evaluacion >= 2 then isnull([2],0) else 0 end),2) '2°', 
-		round((case when @evaluacion >= 3 then isnull([3],0) else 0 end),2) '3°', 
-		round((case when @evaluacion >= 4 then isnull([4],0) else 0 end),2) '4°', 
-		round((case when @evaluacion >= 5 then isnull([5],0) else 0 end),2) '5°', 
+		select distinct row_number() over(order by per_apellidos, per_nombres) 'Nï¿½', mai_codmat 'codmat',/*@evaluacion 'Evaluacion',  mat_nombre 'Materia',*/ per_carnet 'Carnet', per_apellidos 'Apellidos', per_nombres 'Nombres',case mai_estado when 'I' then 'Inscrita' when 'R' then 'Retirada' else 'Desconocido' end 'Estado', case [deserto] when 0 then 'No' when 1 then 'Si' end 'Deserto',
+		round((case when @evaluacion >= 1 then isnull([1],0) else 0 end),2) '1ï¿½', 
+		round((case when @evaluacion >= 2 then isnull([2],0) else 0 end),2) '2ï¿½', 
+		round((case when @evaluacion >= 3 then isnull([3],0) else 0 end),2) '3ï¿½', 
+		round((case when @evaluacion >= 4 then isnull([4],0) else 0 end),2) '4ï¿½', 
+		round((case when @evaluacion >= 5 then isnull([5],0) else 0 end),2) '5ï¿½', 
 		round(isnull((
 			(
 				((case when @evaluacion >= 1 then isnull([1],0) else 0 end))+
@@ -677,7 +694,7 @@ begin
 			inner join ra_pla_planes on pla_codigo = alc_codpla and mai_codpla = pla_codigo
 			inner join ra_mattu_materias_tutoradas on mattu_codhpl = mai_codhpl
 			where ins_codcil = @codcil and mai_codhpl = @codhpl
-		) 'Inscritos totales de la sección'
+		) 'Inscritos totales de la secciï¿½n'
 		from (
 			select mai_codmat, sum(ret_mat) 'Retirados', sum(des_alm) 'Desertados', count(1) 'TotalNuevoIngreso' from (
 				select mai_codmat, case mai_estado when 'R' then 1 else 0 end as ret_mat, case deserto when 1 then 1 else 0 end as des_alm
@@ -734,12 +751,12 @@ begin
 			select 'Se tomaron TODAS las carreras de la materia para este reporte' 'Detalle'  
 		end
 
-		select distinct row_number() over(order by per_apellidos, per_nombres) 'N°', mai_codmat 'codmat',/*@evaluacion 'Evaluacion',  mat_nombre 'Materia',*/ per_carnet 'Carnet', per_apellidos 'Apellidos', per_nombres 'Nombres',case mai_estado when 'I' then 'Inscrita' when 'R' then 'Retirada' else 'Desconocido' end 'Estado', case [deserto] when 0 then 'No' when 1 then 'Si' end 'Deserto',
-		round((case when @evaluacion >= 1 then isnull([1],0) else 0 end),2) '1°', 
-		round((case when @evaluacion >= 2 then isnull([2],0) else 0 end),2) '2°', 
-		round((case when @evaluacion >= 3 then isnull([3],0) else 0 end),2) '3°', 
-		round((case when @evaluacion >= 4 then isnull([4],0) else 0 end),2) '4°', 
-		round((case when @evaluacion >= 5 then isnull([5],0) else 0 end),2) '5°', 
+		select distinct row_number() over(order by per_apellidos, per_nombres) 'Nï¿½', mai_codmat 'codmat',/*@evaluacion 'Evaluacion',  mat_nombre 'Materia',*/ per_carnet 'Carnet', per_apellidos 'Apellidos', per_nombres 'Nombres',case mai_estado when 'I' then 'Inscrita' when 'R' then 'Retirada' else 'Desconocido' end 'Estado', case [deserto] when 0 then 'No' when 1 then 'Si' end 'Deserto',
+		round((case when @evaluacion >= 1 then isnull([1],0) else 0 end),2) '1ï¿½', 
+		round((case when @evaluacion >= 2 then isnull([2],0) else 0 end),2) '2ï¿½', 
+		round((case when @evaluacion >= 3 then isnull([3],0) else 0 end),2) '3ï¿½', 
+		round((case when @evaluacion >= 4 then isnull([4],0) else 0 end),2) '4ï¿½', 
+		round((case when @evaluacion >= 5 then isnull([5],0) else 0 end),2) '5ï¿½', 
 		round(isnull((
 			(
 				((case when @evaluacion >= 1 then isnull([1],0) else 0 end))+
@@ -789,12 +806,12 @@ begin
 		print '@codhpl ' + cast(@codhpl as varchar(10))
 		print '@codcil ' + cast(@codcil as varchar(10))
 
-		select distinct row_number() over(order by per_apellidos, per_nombres) 'N°',mai_codmat 'codmat',/*@evaluacion 'Evaluacion',  mat_nombre 'Materia',*/ per_carnet 'Carnet', per_apellidos 'Apellidos', per_nombres 'Nombres',case mai_estado when 'I' then 'Inscrita' when 'R' then 'Retirada' else 'Desconocido' end 'Estado', case [deserto] when 0 then 'No' when 1 then 'Si' end 'Deserto',
-		round((case when @evaluacion >= 1 then isnull([1],0) else 0 end),2) '1°', 
-		round((case when @evaluacion >= 2 then isnull([2],0) else 0 end),2) '2°', 
-		round((case when @evaluacion >= 3 then isnull([3],0) else 0 end),2) '3°', 
-		round((case when @evaluacion >= 4 then isnull([4],0) else 0 end),2) '4°', 
-		round((case when @evaluacion >= 5 then isnull([5],0) else 0 end),2) '5°', 
+		select distinct row_number() over(order by per_apellidos, per_nombres) 'Nï¿½',mai_codmat 'codmat',/*@evaluacion 'Evaluacion',  mat_nombre 'Materia',*/ per_carnet 'Carnet', per_apellidos 'Apellidos', per_nombres 'Nombres',case mai_estado when 'I' then 'Inscrita' when 'R' then 'Retirada' else 'Desconocido' end 'Estado', case [deserto] when 0 then 'No' when 1 then 'Si' end 'Deserto',
+		round((case when @evaluacion >= 1 then isnull([1],0) else 0 end),2) '1ï¿½', 
+		round((case when @evaluacion >= 2 then isnull([2],0) else 0 end),2) '2ï¿½', 
+		round((case when @evaluacion >= 3 then isnull([3],0) else 0 end),2) '3ï¿½', 
+		round((case when @evaluacion >= 4 then isnull([4],0) else 0 end),2) '4ï¿½', 
+		round((case when @evaluacion >= 5 then isnull([5],0) else 0 end),2) '5ï¿½', 
 		round(isnull((
 						(
 							((case when @evaluacion >= 1 then isnull([1],0) else 0 end))+
@@ -992,7 +1009,7 @@ begin
 	close cursor_datos  
 	deallocate cursor_datos
 
-	select *, @campo1 'Eva.Nª' from @datos order by mattu_codigo--fac_nombre, mat_nombre
+	select *, @campo1 'Eva.Nï¿½' from @datos order by mattu_codigo--fac_nombre, mat_nombre
 end
 
 alter procedure [dbo].[rep_alumnos_nuevo_ingreso_desertados_detalle_alumnos]
