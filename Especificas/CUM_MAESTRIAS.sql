@@ -27,7 +27,6 @@ where mat_codigo = plm_codmat and plm_codpla = @codpla  --and plm_horas_semanale
  where mai.mai_codmat = n.mai_codmat and n.ins_codper = @codper and
  mai.mai_codins in( select ins_codigo from ra_ins_inscripcion where ins_codper = @codper and ins_codcil not in(select cil_codigo from ra_cil_ciclo where cil_vigente_mae = 'S')) and mai.mai_estado <>'R' 
 
- 
  select  @total_uv = sum(mai.mai_uv), @total_um = sum((mai.mai_uv*n.nota))from ra_mai_mat_inscritas as mai, notas as n
  where mai.mai_codmat = n.mai_codmat and n.ins_codper = @codper and
  mai.mai_codins in( select ins_codigo from ra_ins_inscripcion where ins_codper = @codper and ins_codcil not in(select cil_codigo from ra_cil_ciclo where cil_vigente_mae = 'S')) and mai.mai_estado <>'R' 
