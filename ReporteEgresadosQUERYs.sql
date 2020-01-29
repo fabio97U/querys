@@ -1,35 +1,29 @@
 USE [uonline]
 GO
-/****** Object:  StoredProcedure [dbo].[rep_registro_egresados_fecha]    Script Date: 29/1/2020 10:39:02 ******/
+/****** Object:  StoredProcedure [dbo].[rep_registro_egresados_fecha]    Script Date: 29/1/2020 09:44:45 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
---   [rep_registro_egresados_fecha] 119,'9','12/06/2019','24/06/2019'
 ALTER procedure [dbo].[rep_registro_egresados_fecha]
+--   [rep_registro_egresados_fecha] 120,'0','01/11/2019','28/01/2020'
 	@codcil int,
 	@car_codigo char(2),
 	@fecha_inicio varchar(10), 
 	@fecha_final varchar(10)
-
---declare  @codcil int,@car_codigo char(2),@fecha_inicio varchar(10), @fecha_final varchar(10)
 as
-Begin
+begin
+	--declare  @codcil int,@car_codigo char(2),@fecha_inicio varchar(10), @fecha_final varchar(10)
 	declare @nombreciclo varchar(20)
 	--set @codcil = 99
 	--set @car_codigo = '0' 
 	--set @fecha_inicio = '10/12/2014' 
 	--set @fecha_final = '03/01/2015'
-
-
 	set @car_codigo =(case when @car_codigo = '0' then '%%' else @car_codigo end)
-	--select @car_codigo
-
 	set @nombreciclo = (select cic_nombre+'-'+ CAST(cil_anio as varchar) from ra_cil_ciclo join ra_cic_ciclos on cil_codcic=cic_codigo
 	where cil_codigo=@codcil)
-
-	select ROW_NUMBER() over(partition by car_nombre order by per_carnet)corr, per_codigo, per_carnet, per_nombres_apellidos, 
+	select ROW_NUMBER() over(partition by car_nombre order by per_nombres_apellidos)corr, per_codigo, per_carnet, per_nombres_apellidos, 
 		sum(hsp_horas) horas, regr_cum, regr_documentos, regr_observaciones, regr_estado, cic_nombre+'-'+ CAST(cil_anio as varchar) ciclo, car_identificador, car_nombre,
 		case when isnull(regr_record,'R') = 'R' then 'Registrado'
 		when isnull(regr_record,'R') = 'I' then 'Impreso'
@@ -50,5 +44,5 @@ Begin
 	--	and car_identificador like @car_codigo
 		and convert(datetime,regr_fecha,103) >= convert(datetime,@fecha_inicio,103) and convert(datetime,regr_fecha,103) <= convert(datetime,@fecha_final,103)
 	group by per_codigo, per_carnet, per_nombres_apellidos, regr_cum, regr_documentos, regr_observaciones, regr_estado, cil_anio, cic_nombre, regr_record, regr_rendimiento, regr_carta, car_identificador, car_nombre
-	order by 3
-End
+	order by 4
+end
