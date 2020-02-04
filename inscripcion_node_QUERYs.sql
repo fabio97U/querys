@@ -566,7 +566,7 @@ begin
 				select @hpl_alumnos_inscritos = count(1) from ra_mai_mat_inscritas where mai_codhpl = @hpl
 				select @hpl_alumnos_inscritos_azure = count(1) from Inscripcion.dbo.ra_mai_mat_inscritas where mai_codhpl = @hpl
 			end
-			if (@hpl_alumnos_inscritos < (@hpl_max_alumnos + @hpl_alumnos_inscritos_azure))
+			if ((@hpl_alumnos_inscritos + @hpl_alumnos_inscritos_azure) < @hpl_max_alumnos)
 			begin --Se procede a inscribir, hay cupos
 				print 'cupos disponibles'
 				execute web_ins_detinscripcion_azure @regional, @codins, @codper, @codmat, @hpl,'','', @usuario, 'n', @ins_codcil  --apuntar a bd 2
@@ -851,4 +851,34 @@ begin
 	--	exec auditoria_del_sistema 'ra_mai_mat_inscritas','I',@usuario,@fecha,@registro
 	--commit transaction
 	return
+end
+
+
+select * from ins_errins_errores_inscrpcion
+drop table ins_errins_errores_inscrpcion
+create table ins_errins_errores_inscrpcion (
+	errins_codigo int primary key identity(1,1),
+	errins_codper int,
+	errins_codcil smallint,
+	errins_proc_invocado varchar(255),
+	errins_mensaje_error varchar(max),
+	errins_parametros varchar(max),
+	errins_fecha_creacion datetime default getdate()
+)
+
+alter procedure sp_ins_errins_errores_inscrpcion
+	@opcion int,
+	@errins_codper int, 
+	@errins_codcil int, 
+	@errins_proc_invocado varchar(255), 
+	@errins_mensaje_error varchar(max), 
+	@errins_parametros varchar(max)
+as
+begin
+	if @opcion = 1
+	begin
+		insert into ins_errins_errores_inscrpcion (errins_codper, errins_codcil, errins_proc_invocado, errins_mensaje_error, errins_parametros)
+		values (@errins_codper, @errins_codcil, @errins_proc_invocado, @errins_mensaje_error, @errins_parametros)
+		select 1
+	end
 end
