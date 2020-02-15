@@ -511,7 +511,7 @@ values (41659, 'SIOP-I   ', '02', 0, 0),
 
 exec web_mod_ins_cuposinserinscripcion_azure 1, 173322, 122, 1178757, @mi_hpl,'192.168.114.69'
 
-alter procedure web_mod_ins_cuposinserinscripcion_azure
+create procedure web_mod_ins_cuposinserinscripcion_azure
 	-- =============================================
 	-- Author:      <Fabio>
 	-- Create date: <2020-02-01 10:11:13.349>
@@ -599,7 +599,7 @@ begin
 	end
 end
 
-alter procedure [dbo].[web_ins_matinscritas_data]
+create procedure [dbo].[web_ins_matinscritas_data]
 	-- =============================================
 	-- Author:      <Fabio>
 	-- Create date: <2020-01-31 17:56:07.210>
@@ -853,7 +853,6 @@ begin
 	return
 end
 
-
 select * from ins_errins_errores_inscrpcion
 drop table ins_errins_errores_inscrpcion
 create table ins_errins_errores_inscrpcion (
@@ -866,7 +865,7 @@ create table ins_errins_errores_inscrpcion (
 	errins_fecha_creacion datetime default getdate()
 )
 
-alter procedure sp_ins_errins_errores_inscrpcion
+create procedure sp_ins_errins_errores_inscrpcion
 	@opcion int,
 	@errins_codper int, 
 	@errins_codcil int, 
