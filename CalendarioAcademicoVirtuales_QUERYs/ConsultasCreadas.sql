@@ -8,7 +8,6 @@ create table web_caav_calendario_acad_virtual(
 	caav_codmat nvarchar(15),
 	caav_codpla int,
 	caav_evaluacion int,
-	caav_codcil int ,
 	caav_fecha_limite datetime,
 	caav_usuario int,
 	caav_fecha_registro datetime default getdate()
