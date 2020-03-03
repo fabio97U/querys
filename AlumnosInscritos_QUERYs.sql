@@ -13,6 +13,17 @@ in (
 ) t
 where t.apros < t.requeridas
 
+--24/02/2020 
+select dbo.fx_MateriasAprobadas(per_carnet) 'apros', pla_n_mat 'requeridas', 
+per_carnet, per_apellidos_nombres, per_estado, per_telefono, per_tel_trabajo, 
+per_telefono_oficina, per_email, per_email_opcional, per_emer_tel, per_anio_ingreso, pla_alias_carrera
+from ra_ins_inscripcion 
+inner join ra_per_personas on per_codigo = ins_codper
+inner join ra_alc_alumnos_carrera on alc_codper = per_codigo
+inner join ra_pla_planes on pla_codigo = alc_codpla
+where ins_codcil = 122 and per_estado = 'A' and pla_codcar in (36, 65, 120, 146, 28, 17) and per_tipo = 'U'
+) t
+where t.apros < t.requeridas
 --SELECT * from ra_cil_ciclo 
 --select * from (
 --select dbo.fx_MateriasAprobadas(per_carnet) 'apros', pla_n_mat 'requeridas', 
