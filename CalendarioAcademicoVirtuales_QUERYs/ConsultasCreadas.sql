@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 declare @opm_codigo_max int = (select max(opm_codigo)+1 from adm_opm_opciones_menu)
 insert into adm_opm_opciones_menu(opm_codigo, opm_nombre, opm_opcion_padre, opm_sistema, opm_link, opm_orden) 
 values (@opm_codigo_max, 'Calendarios académicos', 22, 'U', 'logo.html', 59);
@@ -6,6 +7,11 @@ insert into adm_opm_opciones_menu(opm_codigo, opm_nombre, opm_opcion_padre, opm_
 ((select max(opm_codigo)+1 from adm_opm_opciones_menu), 'Alumnos presenciales', @opm_codigo_max ,'U', 'ra_caa_calendario_acad.aspx', 1),
 ((select max(opm_codigo)+2 from adm_opm_opciones_menu), 'Alumnos virtuales', @opm_codigo_max,'U', 'web_calendario_academico_v.aspx', 2)
 
+=======
+
+select * from web_caav_calendario_acad_virtual
+
+>>>>>>> 259fdcc00c67ef818fc08380765c1facb90e6985
 create procedure sp_fecha_limite_prorroga
 	-- =============================================
 	-- Author:      <Fabio>
@@ -135,4 +141,8 @@ set dateformat dmy
 			
 		end catch
 	end
+<<<<<<< HEAD
 END
+=======
+END
+>>>>>>> 259fdcc00c67ef818fc08380765c1facb90e6985
