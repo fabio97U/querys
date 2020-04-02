@@ -1,10 +1,10 @@
-
 --drop table col_parq_parqueo
 create table col_parq_parqueo(
 	parq_codigo int identity(1,1),
 	parq_codtmo int primary key,
 	parq_fechahora datetime default getdate()
 )
+select * from col_parq_parqueo
 --select  parq_codigo 'codparq', tmo_codigo, tmo_descripcion, tmo_arancel, parq_fechahora from col_parq_parqueo 
 --inner join col_tmo_tipo_movimiento on tmo_codigo = parq_codtmo 
 --declare @res varchar(5)
@@ -14,7 +14,8 @@ create table col_parq_parqueo(
 --insert into col_parq_parqueo(parq_codtmo)
 --select * from col_tmo_tipo_movimiento where tmo_descripcion like '%talonario%'
 
-create procedure sp_col_parq_parqueo
+
+alter procedure [dbo].[sp_col_parq_parqueo]
 	-- =============================================
 	-- Author:      <Fabio>
 	-- Create date: <2019-07-19 15:20:50.140>
@@ -28,7 +29,7 @@ create procedure sp_col_parq_parqueo
 	@parq_codtmo int = 0
 as
 begin
-	if @opcion = 1--Devuelve la data de los aranceles que no estan ingresados en la tabla "col_parq_parqueo"
+	if @opcion = 1--Devuelve la data de los aranceles que no estan ingresados en la tabla col_parq_parqueo
 	begin
 		select * from (
 		select tmo_codigo, tmo_descripcion, tmo_arancel from col_tmo_tipo_movimiento 
@@ -56,7 +57,7 @@ begin
 end
 
 --exec sp_rango_Fechas_talonario_parqueo 119,'22/07/2019','23/07/2019'
-alter proc [dbo].[sp_rango_Fechas_talonario_parqueo]
+ALTER proc [dbo].[sp_rango_Fechas_talonario_parqueo]
        @ciclo varchar(12),
 	   @fechaini varchar(12),
 	   @fechafin varchar(12)
@@ -84,3 +85,12 @@ begin
 	--tal_num_talonario in(20001, 20002)
     order by fechaIni,fechaFin desc
 end
+
+
+
+--reastrear talonario de parqueo 
+--12-1039-2019
+--51-4942-2019
+--T-39, J-51, T-51
+
+--sI NO DIJITA TALONARIO NO DEJAR PASAR, T-39, J-51, T-51

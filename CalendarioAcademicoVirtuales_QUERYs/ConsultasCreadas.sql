@@ -1,23 +1,11 @@
-<<<<<<< HEAD
---SELECT caa_codigo, caa_dias, caa_hora, CONVERT(VARCHAR,caa_fecha,103) caa_fecha, 
---caa_evaluacion, caa_grupo 
---from web_ra_caa_calendario_acad
-----SELECT [caa_codigo], [caa_dias], [caa_hora], CONVERT(VARCHAR,[caa_fecha],103) caa_fecha, [caa_evaluacion], [caa_grupo] 
-----FROM [web_ra_caa_calendario_acad]
+declare @opm_codigo_max int = (select max(opm_codigo)+1 from adm_opm_opciones_menu)
+insert into adm_opm_opciones_menu(opm_codigo, opm_nombre, opm_opcion_padre, opm_sistema, opm_link, opm_orden) 
+values (@opm_codigo_max, 'Calendarios académicos', 22, 'U', 'logo.html', 59);
 
-----order by caa_grupo asc, caa_evaluacion asc
-select * from web_caav_calendario_acad_virtual
---create table web_caav_calendario_acad_virtual(
---	caav_codigo int primary key identity(1,1),
---	caav_codmat nvarchar(15),
---	caav_codpla int,
---	caav_evaluacion int,
---	caav_codcil int ,
---	caav_fecha_limite datetime,
---	caav_usuario int,
---	caav_fecha_registro datetime default getdate()
---)
---select * from ra_hpl_horarios_planificacion where hpl_codmat = 'FIS1-V' and hpl_codcil = 122
+insert into adm_opm_opciones_menu(opm_codigo, opm_nombre, opm_opcion_padre, opm_sistema, opm_link, opm_orden) values
+((select max(opm_codigo)+1 from adm_opm_opciones_menu), 'Alumnos presenciales', @opm_codigo_max ,'U', 'ra_caa_calendario_acad.aspx', 1),
+((select max(opm_codigo)+2 from adm_opm_opciones_menu), 'Alumnos virtuales', @opm_codigo_max,'U', 'web_calendario_academico_v.aspx', 2)
+
 create procedure sp_fecha_limite_prorroga
 	-- =============================================
 	-- Author:      <Fabio>
@@ -79,7 +67,6 @@ begin
 	end
 
 end
-=======
 
 create table web_caav_calendario_acad_virtual(
 	caav_codigo int primary key identity(1,1),
@@ -103,12 +90,13 @@ GO
 -- Create date: <15.02.2020>
 -- Description:	<Mantenimiento de el calendario academico para virtuales.>
 -- =============================================
---sp_calendario_academico_virtual 1, 'hhhh', 80, 2, '', 2
-ALTER PROCEDURE sp_calendario_academico_virtual
+
+CREATE PROCEDURE [dbo].[sp_calendario_academico_virtual]
 	@opcion int,
 	@codmat nvarchar(10),
 	@codpla int,
 	@evaluacion int,
+	@bloque_fecha int,
 	@fecha_li nvarchar(10),
 	@coduser int
 AS
@@ -119,32 +107,32 @@ set dateformat dmy
 		declare @fecha_evaluacion nvarchar(10)
 		set @fecha_evaluacion = (select top 1 convert(nvarchar(10),caav_fecha_limite,103) from web_caav_calendario_acad_virtual where caav_evaluacion = @evaluacion and caav_codpla = @codpla )
 		set @fecha_evaluacion = case when @fecha_evaluacion is null then convert(nvarchar(10),getdate(),103) else @fecha_evaluacion end
-		if not exists (select 1 from web_caav_calendario_acad_virtual where caav_codmat = @codmat and caav_codpla = @codpla and caav_evaluacion = @evaluacion  )
+		if not exists (select 1 from web_caav_calendario_acad_virtual where caav_codmat = @codmat and caav_codpla = @codpla and caav_evaluacion = @evaluacion and caav_bloque = @bloque_fecha  )
 			begin
-				insert into web_caav_calendario_acad_virtual (caav_codmat,caav_codpla,caav_evaluacion,caav_fecha_limite,caav_usuario)
-				values (@codmat,@codpla,@evaluacion,@fecha_evaluacion,@coduser)
+				insert into web_caav_calendario_acad_virtual (caav_codmat,caav_codpla,caav_evaluacion,caav_bloque,caav_fecha_limite,caav_usuario)
+				values (@codmat,@codpla,@evaluacion,@bloque_fecha,@fecha_evaluacion,@coduser)
 			end
 	end
 	if @opcion = 2
 	begin
-		select caav_codpla codpla,caav_evaluacion evaluacion,convert(nvarchar(10),max(caav_fecha_limite),103) fecha_li
-			from web_caav_calendario_acad_virtual where caav_codpla = @codpla  
-		group by caav_evaluacion,caav_codpla
+		select caav_codpla codpla,caav_bloque bloque_fecha,caav_evaluacion evaluacion,convert(nvarchar(10),max(caav_fecha_limite),103) fecha_li
+			from web_caav_calendario_acad_virtual where caav_codpla = @codpla and caav_evaluacion = @evaluacion
+		group by caav_evaluacion,caav_codpla,caav_bloque
 	end
 	if @opcion = 3
 	begin
-		select caav_codigo,mat_codigo,mat_nombre,caav_evaluacion from web_caav_calendario_acad_virtual 
+		select caav_codigo,mat_codigo,mat_nombre,caav_evaluacion,caav_bloque from web_caav_calendario_acad_virtual 
 			inner join ra_mat_materias on mat_codigo = caav_codmat
-			where caav_codpla = @codpla and caav_evaluacion = @evaluacion
+			where caav_codpla = @codpla and caav_evaluacion = @evaluacion and caav_bloque = @bloque_fecha
 	end
 	if @opcion = 4
 	begin
 		begin try
-			update web_caav_calendario_acad_virtual set caav_fecha_limite = @fecha_li where caav_codpla = @codpla and caav_evaluacion = @evaluacion
+			update web_caav_calendario_acad_virtual set caav_fecha_limite = @fecha_li
+				where caav_codpla = @codpla and caav_evaluacion = @evaluacion and caav_bloque = @bloque_fecha
 		end try
 		begin catch
+			
 		end catch
 	end
 END
-GO
->>>>>>> 492680c64c619433c70309a9bde31f938e7c0072
