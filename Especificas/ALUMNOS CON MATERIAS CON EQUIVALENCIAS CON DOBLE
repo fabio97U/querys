@@ -1,0 +1,33 @@
+--ALUMNOS CON MATERIAS CON EQUIVALENCIAS CON DOBLE NOTA PATA LA MISMA MATERIA
+
+select * from ra_eqn_equivalencia_notas 
+inner join ra_equ_equivalencia_universidad on eqn_codequ = equ_codigo
+where eqn_codequ in (
+select equ_codigo--, select equ_codigo, per_codigo, per_carnet, eqn_codmat, cont
+from (
+SELECT distinct equ_codigo, per_codigo, per_carnet, eqn_codmat, count(distinct eqn_nota) cont
+from ra_equ_equivalencia_universidad
+inner join ra_eqn_equivalencia_notas on eqn_codequ = equ_codigo
+inner join ra_per_personas on equ_codper = per_codigo
+inner join ra_ins_inscripcion on ins_codper = equ_codper-- and ins_codcil = 122
+where eqn_nota > 0--equ_codper =102744
+group by equ_codigo, per_codigo, per_carnet, eqn_codmat
+) ta
+where cont > 1
+--order by eqn_codmat
+)
+and eqn_codmat in (
+select eqn_codmat--, per_codigo, per_carnet, eqn_codmat, cont
+from (
+SELECT distinct equ_codigo, per_codigo, per_carnet, eqn_codmat, count(distinct eqn_nota) cont
+from ra_equ_equivalencia_universidad
+inner join ra_eqn_equivalencia_notas on eqn_codequ = equ_codigo
+inner join ra_per_personas on equ_codper = per_codigo
+inner join ra_ins_inscripcion on ins_codper = equ_codper-- and ins_codcil = 122
+where eqn_nota > 0--equ_codper =102744
+group by equ_codigo, per_codigo, per_carnet, eqn_codmat
+) ta
+where cont > 1
+--order by eqn_codmat
+)
+--order by eqn_codmat
