@@ -1,6 +1,7 @@
 
 declare @tabla_posibles_egresados as table(
-	per_codigo int,	
+	per_codigo int,
+	facultad varchar(50),
 	car_carrera varchar(500),
 	per_carnet varchar(50),	
 	per_apellidos_nombres varchar(201),	
@@ -24,12 +25,12 @@ select car_codigo  from ra_car_carreras where car_estado = 'A' and car_codtde = 
 open m_cursor 
  
 fetch next from m_cursor into @car_codigo
-print '@car_codigo: ' + cast(@car_codigo as varchar(12))
 while @@FETCH_STATUS = 0 
 begin
     --select @car_codigo
-	insert into @tabla_posibles_egresados (per_codigo,car_carrera,per_carnet,per_apellidos_nombres,per_correo_institucional,per_telefono,per_celular,per_sexo,per_email,per_direccion,materias_pasadas,total_materias,cum_limpio,horas_sociales,inscribio_inter_ciclo)
-	exec sp_estimado_egresados 2, 122, @car_codigo --COMENTAREAR PARTES DE ESTE SP: SALIDA DE CANTIDADALUMNOS
+	print '@car_codigo: ' + cast(@car_codigo as varchar(12))
+	insert into @tabla_posibles_egresados (per_codigo,facultad, car_carrera,per_carnet,per_apellidos_nombres,per_correo_institucional,per_telefono,per_celular,per_sexo,per_email,per_direccion,materias_pasadas,total_materias,cum_limpio,horas_sociales,inscribio_inter_ciclo)
+	exec sp_estimado_egresados 2, 123, @car_codigo
     fetch next from m_cursor into @car_codigo
 end      
 close m_cursor  

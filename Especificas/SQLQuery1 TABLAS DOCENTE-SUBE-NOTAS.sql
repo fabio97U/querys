@@ -2,11 +2,16 @@ select emp_email_institucional, * from pla_emp_empleado where emp_nombres_apelli
 select * from ra_hpl_horarios_planificacion where hpl_codemp in (4242, 3812) and hpl_codcil = 124
 select * from web_ra_innot_ingresosdenotas where innot_codemp = 236 and innot_codcil = 124
 --innot_codingre = 'INT2-E12401142421'
-select * from web_ra_npro_notasprocesadas 
---inner join ra_per_personas on per_codigo = npro_alumno
+select mov_fecha_real_pago, * from web_ra_npro_notasprocesadas 
+inner join ra_per_personas on per_codigo = npro_alumno
+
+inner join col_mov_movimientos on mov_codper = per_codigo
+inner join col_dmo_det_mov on dmo_codmov = mov_codigo and dmo_codcil = 123 and mov_codcil = 123
+and dmo_codtmo = 134
 where npro_codinnot in (
-select innot_codingre from web_ra_innot_ingresosdenotas where innot_codemp = 236 and innot_codcil = 124
-) and npro_alumno = 226383
+select */*innot_codingre*/ from web_ra_innot_ingresosdenotas where innot_codemp in (3995, 475, 3112, 1525, 2947) and innot_codcil = 123
+order by innot_Fecha
+) and npro_alumno = 48954
 
 select * from ra_not_notas
 

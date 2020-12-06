@@ -297,13 +297,13 @@ end
 	-- Create date: <2020-05-28 15:26:04.300>
 	-- Description: <Devuelve la data de los resultados de la evaluacion docente>
 	-- =============================================
-	-- rep_resultados_evaluacion 1, 6, 1, 122, 0	--Detalle preguntas cerradas para una escuela
-	-- rep_resultados_evaluacion 1, 6, 1, 122, 3092 --Detalle preguntas cerradas para un empleado
-	-- rep_resultados_evaluacion 1, 6, 1, 122, 2436
-	-- rep_resultados_evaluacion 2, 6, 1, 122, 0	--Detalle preguntas abiertas para una escuela
-	-- rep_resultados_evaluacion 2, 6, 1, 122, 3092	--Detalle preguntas abiertas para un empleado
-	-- rep_resultados_evaluacion 2, 6, 1, 122, 2436
-alter procedure rep_resultados_evaluacion
+	-- rep_resultados_evaluacion 1, 4, 2, 123, 0	--Detalle preguntas cerradas para una escuela
+	-- rep_resultados_evaluacion 1, 4, 2, 123, 3092 --Detalle preguntas cerradas para un empleado
+	-- rep_resultados_evaluacion 1, 4, 2, 123, 2436
+	-- rep_resultados_evaluacion 2, 4, 2, 123, 0	--Detalle preguntas abiertas para una escuela
+	-- rep_resultados_evaluacion 2, 4, 2, 123, 3092	--Detalle preguntas abiertas para un empleado
+	-- rep_resultados_evaluacion 2, 4, 2, 123, 2436
+ALTER procedure [dbo].[rep_resultados_evaluacion]
 	@opcion int = 0,
 	@codesc int = 0,
 	@codenc int = 0,
@@ -312,14 +312,20 @@ alter procedure rep_resultados_evaluacion
 as
 begin
 	
-	if @opcion = 1 --Resultados de las preguntas "cerradas"
+	if @opcion = 1 --Resultados de las preguntas cerradas
 	begin
-		select concat('0',cil_codcic,'-',cil_anio) 'ciclo', hpl_codigo, hpl_codmat, mat_nombre, hpl_descripcion, 
-			hpl_codemp, emp_nombres_apellidos, esc_nombre, fac_nombre
-			
-			grupe_orden, grupe_nombre, pre_orden_general, pre_pregunta, opc_opcion, count(1) cant--, '%' 'porcentaje'
+		select concat('0', cil_codcic, '-', cil_anio) 'ciclo', hpl_codigo, hpl_codmat, mat_nombre, hpl_descripcion,
+			hpl_codemp, emp_nombres_apellidos, esc_nombre, fac_nombre,
+			grupe_orden, grupe_nombre, pre_orden_general, pre_pregunta, opc_opcion, count(1) cant,
+			(select COUNT(encenc_codper) from emer_encenc_encabezado_encuesta em where hpl_codigo = em.encenc_codhpl ) tot,--, '%' 'porcentaje'
+			(select count(ins_codper) from ra_ins_inscripcion
+					inner join ra_mai_mat_inscritas on mai_codins = ins_codigo
+					inner
+									  join ra_hpl_horarios_planificacion p on p.hpl_codigo = mai_codhpl
+					where p.hpl_codigo = h.hpl_codigo and mai_estado = 'I'
+							) ins
 		from emer_encenc_encabezado_encuesta
-			inner join ra_hpl_horarios_planificacion on hpl_codigo = encenc_codhpl
+			inner join ra_hpl_horarios_planificacion h on hpl_codigo = encenc_codhpl
 			inner join ra_esc_escuelas on esc_codigo = hpl_codesc
 			inner join ra_fac_facultades on fac_codigo = esc_codfac
 			inner join ra_mat_materias on mat_codigo = hpl_codmat
@@ -331,8 +337,8 @@ begin
 			inner join emer_grupe_grupos_estudio on grupe_codigo = pre_codgrupe
 			inner join emer_opc_opciones on opc_codigo = detenc_codopc
 			inner join emer_enc_encuestas on enc_codigo = encenc_codenc
-		where hpl_codesc = @codesc and enc_codigo = @codenc and encenc_codcil = @codcil
-				and ((case when (hpl_codemp > 0 and @codemp > 0) then hpl_codemp else 0 end) = (case when @codemp > 0 then @codemp else 0 end))
+		where hpl_codesc = @codesc and enc_codigo = @codenc and encenc_codcil = @codcil-- and emp_codigo = 4357
+				and((case when(hpl_codemp > 0 and @codemp > 0) then hpl_codemp else 0 end) = (case when @codemp > 0 then @codemp else 0 end))
 		group by cil_codcic, cil_anio, hpl_codigo, hpl_codmat, mat_nombre, hpl_descripcion, hpl_codemp ,emp_nombres_apellidos, esc_nombre, fac_nombre, 
 			
 			grupe_orden, grupe_nombre, pre_orden_general, pre_pregunta, opc_opcion
@@ -340,9 +346,9 @@ begin
 
 	end
 
-	if @opcion = 2 --Resultados de las preguntas "abiertas"
+	if @opcion = 2--Resultados de las preguntas abiertas
 	begin
-		select concat('0',cil_codcic,'-',cil_anio) 'ciclo', hpl_codigo, hpl_codmat, mat_nombre, 
+		select concat('0', cil_codcic, '-', cil_anio) 'ciclo', hpl_codigo, hpl_codmat, mat_nombre, 
 			hpl_descripcion, hpl_codemp ,emp_nombres_apellidos, fac_nombre, esc_nombre, 
 			
 			grupe_orden, grupe_nombre, pre_orden_general, pre_pregunta, opc_opcion, detenc_detalle, count(1) cant
@@ -359,17 +365,149 @@ begin
 			inner join emer_grupe_grupos_estudio on grupe_codigo = pre_codgrupe
 			inner join emer_opc_opciones on opc_codigo = detenc_codopc
 			inner join emer_enc_encuestas on enc_codigo = encenc_codenc
-			
+
+
 			inner join emer_preopc_preguntas_opciones on preopc_codpre = pre_codigo and preopc_codopc = opc_codigo
 		where hpl_codesc = @codesc and enc_codigo = @codenc and encenc_codcil = @codcil
-				and ((case when (hpl_codemp > 0 and @codemp > 0) then hpl_codemp else 0 end) = (case when @codemp > 0 then @codemp else 0 end))
-				and preopc_codtipo = 2 --RESPUESTAS ABIERTAS
+				and((case when(hpl_codemp > 0 and @codemp > 0) then hpl_codemp else 0 end) = (case when @codemp > 0 then @codemp else 0 end))
+				and preopc_codtipo = 2--RESPUESTAS ABIERTAS
 		group by cil_codcic, cil_anio, hpl_codigo, hpl_codmat, mat_nombre, 
 			hpl_descripcion, hpl_codemp ,emp_nombres_apellidos, fac_nombre, esc_nombre, 
 			
 			grupe_orden, grupe_nombre, pre_orden_general, pre_pregunta, opc_opcion, detenc_detalle
 		order by mat_nombre, pre_orden_general asc
 
+
 	end
 
+end
+
+
+
+
+
+
+
+
+-- =============================================
+	-- Author:      <Fabio>
+	-- Create date: <2020-10-08 16:45:38.107>
+	-- Description: <Migra la encuesta de "emergencia" de un ciclo a otro>
+	-- =============================================
+	-- web_ceed_crear_evaluacion_estudiantil_docente_emergencia 1, 1, 122, 123 -- Migra encuesta  de presencial pregrado del ciclo "@codcil_encuesta_origen" al "@codcil_encuesta_destino"
+alter procedure web_ceed_crear_evaluacion_estudiantil_docente_emergencia
+	@opcion int = 0,
+	@codtde int = 0,
+	@codcil_encuesta_origen int = 0,
+	@codcil_encuesta_destino int = 0
+as
+begin
+
+	if @opcion = 1
+	begin
+		
+		if not exists (select 1 from emer_enc_encuestas where enc_codcil = @codcil_encuesta_destino and enc_codtde = @codtde)--Si el ciclo destino no tiene encuesta para el @codtde
+		begin
+			--select * from emer_enc_encuestas where enc_codcil = @codcil_encuesta_origen and enc_codtde = @codtde
+			--select * from emer_grupe_grupos_estudio
+			--select * from emer_pre_preguntas
+			--select * from emer_opc_opciones
+			--select * from emer_preopc_preguntas_opciones
+			declare @codenc_origen int
+			declare @max_codenc int, @max_grupe int, @max_pre int, @max_opc int
+
+			declare @tbl_grupe as table (grupe_nuevo_codigo int, grupe_codigo int, grupe_nombre varchar(255), grupe_nuevo_codenc int, grupe_orden int)
+			declare @tbl_pre as table (
+				pre_nuevo_codigo int,
+				pre_codigo int,
+				pre_codtipp int,
+				pre_nuevo_codgrupe int,
+				pre_codgrupe int,
+				pre_orden_general int, -- numero de pregunta en la encuesta
+				pre_orden int, -- numero de pregunta en el grupo
+				pre_pregunta varchar(1024)
+			)
+			declare @tbl_opc as table (opc_nuevo_codigo int, opc_codigo int, opc_nueva_codenc int, opc_codenc int, opc_opcion varchar(255))
+			declare @tbl_preopc as table (
+				preopc_nueva_codpre int,
+				preopc_nueva_codopc int,
+				preopc_codtipo int,
+				preopc_opc_orden int
+
+			)
+			select @codenc_origen = enc_codigo from emer_enc_encuestas
+			where enc_codcil = @codcil_encuesta_origen and enc_codtde = @codtde
+			if (isnull(@codenc_origen, 0) <> 0) -- Si el ciclo origen tiene encuesta para el @codtde
+			begin
+				select @max_codenc = max(enc_codigo) + 1 from emer_enc_encuestas
+				select @max_grupe = max(grupe_codigo) from emer_grupe_grupos_estudio
+				select @max_pre = max(pre_codigo) from emer_pre_preguntas
+				select @max_opc = max(opc_codigo) from emer_opc_opciones
+
+				insert into @tbl_grupe
+				(grupe_nuevo_codigo, grupe_codigo, grupe_nombre, grupe_nuevo_codenc, grupe_orden)
+				select @max_grupe +  row_number() over(order by grupe_codigo),
+				grupe_codigo, grupe_nombre, @max_codenc, grupe_orden 
+				from emer_grupe_grupos_estudio
+				where grupe_codenc = @codenc_origen
+				--select * from @tbl_grupe
+
+				--Preguntas
+				insert into @tbl_pre (pre_nuevo_codigo, pre_codigo, pre_codtipp, pre_nuevo_codgrupe, pre_codgrupe, pre_orden_general, pre_orden, pre_pregunta)
+				select  @max_pre +  row_number() over(order by pre_codigo), 
+				pre.pre_codigo 'pre_codigo', pre.pre_codtipp 'pre_codtipp', tbl_grupe.grupe_nuevo_codigo 'grupe_nuevo_codigo', pre.pre_codgrupe 'pre_codgrupe', pre.pre_orden_general 'pre_orden_general', pre.pre_orden 'pre_orden', pre.pre_pregunta 'pre_pregunta'
+				from emer_grupe_grupos_estudio as grupe
+				inner join emer_pre_preguntas as pre on pre_codgrupe = grupe.grupe_codigo
+				inner join @tbl_grupe as tbl_grupe on tbl_grupe.grupe_codigo = grupe.grupe_codigo
+				where grupe.grupe_codenc = @codenc_origen
+				--select * from @tbl_pre
+				
+				----Opciones
+				insert into @tbl_opc (opc_nuevo_codigo, opc_codigo, opc_nueva_codenc, opc_codenc, opc_opcion)
+				select @max_opc +  row_number() over(order by opc_codigo), 
+				opc_codigo, @max_codenc, opc_codenc, opc_opcion
+				from emer_enc_encuestas
+				inner join emer_opc_opciones as opc on opc_codenc = enc_codigo
+				where opc_codenc = @codenc_origen
+				--select * from @tbl_opc
+
+				--Preguntas-Opciones
+				insert into @tbl_preopc(preopc_nueva_codpre, preopc_nueva_codopc, preopc_codtipo, preopc_opc_orden)
+				select tbl_p.pre_nuevo_codigo, tbl_o.opc_nuevo_codigo, preopc_codtipo, preopc_opc_orden 
+				from emer_preopc_preguntas_opciones
+				inner join @tbl_pre tbl_p on tbl_p.pre_codigo = preopc_codpre
+				inner join @tbl_opc tbl_o on tbl_o.opc_codigo = preopc_codopc
+
+				--Insertando en las tablas
+				insert into emer_enc_encuestas (enc_nombre, enc_codpon, enc_codcil, enc_codtde, enc_objetivo, enc_fecha_inicio, enc_fecha_fin)
+				select enc_nombre, enc_codpon, @codcil_encuesta_destino 'enc_codcil', @codtde 'enc_codtde', enc_objetivo, enc_fecha_inicio, enc_fecha_fin 
+				from emer_enc_encuestas
+				where enc_codigo = @codenc_origen
+
+				insert into emer_grupe_grupos_estudio (grupe_nombre, grupe_codenc, grupe_orden)
+				select grupe_nombre, grupe_nuevo_codenc, grupe_orden 
+				from @tbl_grupe
+
+				insert into emer_pre_preguntas (pre_codtipp, pre_codgrupe, pre_orden_general, pre_orden, pre_pregunta)
+				select pre_codtipp, pre_nuevo_codgrupe, pre_orden_general, pre_orden, pre_pregunta 
+				from @tbl_pre
+
+				insert into emer_opc_opciones (opc_codenc, opc_opcion)
+				select opc_nueva_codenc, opc_opcion from @tbl_opc
+					
+				insert into emer_preopc_preguntas_opciones (preopc_codpre, preopc_codopc, preopc_codtipo, preopc_opc_orden)
+				select preopc_nueva_codpre, preopc_nueva_codopc, preopc_codtipo, preopc_opc_orden 
+				from @tbl_preopc
+					
+				select concat('Codigo de la encuesta: ', @max_codenc) res
+			end
+		end
+		else
+		begin
+			--print ('Ya existe una encuesta en el ciclo ', @codcil_encuesta_destino, ' para el tipo de estudio ', @codtde)
+			declare @enc_codigo int = 0
+			select @enc_codigo = enc_codigo from emer_enc_encuestas where enc_codcil = @codcil_encuesta_destino and enc_codtde = @codtde
+			exec sp_data_emer_encuestas @opcion = 1, @codenc = @enc_codigo
+		end
+	end
 end
