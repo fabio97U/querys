@@ -59,31 +59,35 @@ WHERE pla_codcar in (11, 34, 22) and pla_nombre = 'PLAN 2021'
 --34	LICENCIATURA EN COMUNICACIONES, codpla 2021 479
 --22	INGENIERÍA INDUSTRIAL, codpla 2021 486
 
+--LICENCIATURA EN ADMINISTRACION DE EMPRESAS, PLAN 2021, 81, codpla 491
+--LICENCIATURA EN COMUNICACIONES, PLAN 2021, 82, codpla 490
+--INGENIERIA INDUSTRIAL, PLAN 2021, 83, codpla 489
+
 select * from ra_alc_alumnos_carrera
 inner join ra_per_personas on per_codigo = alc_codper
-where alc_codpla in (485, 479, 486)
+where alc_codpla in (489, 490, 491)
 
-exec dbo.web_ins_matinscritas_nodjs 228534, 125
+exec dbo.web_ins_matinscritas_nodjs 173322, 125
 exec dbo.web_ins_genasesoria_con_matins_nodjs 125, 228534
-exec dbo.web_ins_genasesoria 125, 226374
+exec dbo.web_ins_genasesoria 125, 173322
 --11-0193-2021
 
 select * from ra_validaciones_globales where rvg_codper = 228582
 
-declare @codper int = 226374, @codcil int = 125
-delete from ra_not_notas where not_codmai in (
-select mai_codigo from ra_ins_inscripcion 
-inner join ra_mai_mat_inscritas on mai_codins = ins_codigo
-where ins_codper = @codper
-)
+declare @codper int = 173322, @codcil int = 125
+--delete from ra_not_notas where not_codmai in (
+--select mai_codigo from ra_ins_inscripcion 
+--inner join ra_mai_mat_inscritas on mai_codins = ins_codigo
+--where ins_codper = @codper
+--)
 delete from ra_mai_mat_inscritas_especial where mai_codins in (
 select ins_codigo from ra_ins_inscripcion where ins_codper = @codper and ins_codcil = @codcil
 )
 delete from ra_mai_mat_inscritas 
 where mai_codigo in (
 select mai_codigo from ra_ins_inscripcion 
-inner join ra_mai_mat_inscritas on mai_codins = ins_codigo
-where ins_codper = @codper
+inner join ra_mai_mat_inscritas on mai_codins = ins_codigo 
+where ins_codper = @codper and ins_codcil = @codcil
 )
 delete from ra_ins_inscripcion where ins_codper = @codper and ins_codcil = @codcil
 delete from ra_dpipg_detalle_pre_inscripcion_pre_grado where dpipg_codpipg in (
@@ -94,30 +98,31 @@ update ra_validaciones_globales set rvg_mensaje = '0' where rvg_codper = @codper
 --insert into ra_validaciones_globales (rvg_carnet, rvg_codper, rvg_mensaje) values ('1101932021',228582,0)
 
 
+drop type tbl_preins
 
-create type tbl_preins as table
-(
+create type tbl_preins as table(
 	dpipg_codpipg int,
 	dpipg_codmat varchar(10),
 	dpipg_codhpl int,
-	dppig_lunes nvarchar(1),
-	dppig_martes nvarchar(1),
-	dppig_miercoles nvarchar(1),
-	dppig_jueves nvarchar(1),
-	dppig_viernes nvarchar(1),
-	dppig_sabado nvarchar(1),
-	dppig_domingo nvarchar(1),
-	dppig_codman int,
-	dppig_comentario nvarchar(500)
+	dpipg_lunes nvarchar(1),
+	dpipg_martes nvarchar(1),
+	dpipg_miercoles nvarchar(1),
+	dpipg_jueves nvarchar(1),
+	dpipg_viernes nvarchar(1),
+	dpipg_sabado nvarchar(1),
+	dpipg_domingo nvarchar(1),
+	dpipg_codman int,
+	dpipg_comentario nvarchar(500),
+	dpipg_hizo_cambio int default 0
 )
 
-	-- =============================================
+		-- =============================================
 	-- Author:      <Fabio>
 	-- Create date: <2020-12-11 21:34:05.296>
 	-- Description: <Realiza procesos para preinscripción pregrado>
 	-- =============================================
 	-- exec sp_pre_inscripcion_nodjs 1
-alter procedure sp_pre_inscripcion_nodjs
+create procedure [dbo].[sp_pre_inscripcion_nodjs]
 	@opcion int = 0,
 	@codper int = 0,
 	@codcil int = 0,
@@ -148,10 +153,10 @@ begin
 			insert into ra_dpipg_detalle_pre_inscripcion_pre_grado 
 			(dpipg_codpipg, dpipg_codmat, dpipg_codhpl, 
 			dppig_lunes, dppig_martes, dppig_miercoles, dppig_jueves, dppig_viernes, dppig_sabado, dppig_domingo,
-			dppig_codman, dppig_comentario)
+			dppig_codman, dppig_comentario, dpipg_hizo_cambio)
 			select @codpipg, dpipg_codmat, dpipg_codhpl, 
 			dppig_lunes, dppig_martes, dppig_miercoles, dppig_jueves, dppig_viernes, dppig_sabado, dppig_domingo, 
-			dppig_codman, dppig_comentario
+			dppig_codman, dppig_comentario, dpipg_hizo_cambio
 			from @tbl_preins
 		end
 		select 1 res
@@ -184,7 +189,7 @@ begin
 		order by dpipg_codmat, tpm_tipo_materia desc
 	end
 end
-go
+
 
 
 	-- =============================================
@@ -216,7 +221,8 @@ select pipg_codigo, dpipg_codigo, mat_codigo, pipg_codper, pipg_codcil,
 	case when hpl_sabado = 'S' then 'SABADO-' ELSE '' END + 
 	case when hpl_domingo = 'S' then 'DOMINGO-' ELSE '' END dias_hpl,
 	pipg_fecha_creacion, dpipg_fecha,
-	dpipg_codmat, tpm_tipo_materia
+	dpipg_codmat, tpm_tipo_materia,
+	fac_codigo, fac_nombre
 from ra_pipg_pre_inscripcion_pre_grado
 	inner join ra_dpipg_detalle_pre_inscripcion_pre_grado on dpipg_codpipg = pipg_codigo
 	inner join ra_hpl_horarios_planificacion on dpipg_codhpl = hpl_codigo
@@ -229,13 +235,14 @@ from ra_pipg_pre_inscripcion_pre_grado
 
 	inner join ra_tpm_tipo_materias on hpl_tipo_materia = tpm_tipo_materia
 
-
-
+	inner join ra_alc_alumnos_carrera on alc_codper = pipg_codper
+	inner join ra_pla_planes on pla_codigo = alc_codpla
+	inner join ra_car_carreras on pla_codcar = car_codigo
+	inner join ra_fac_facultades on fac_codigo = car_codfac
 
 --#region CAMBIOS SP´S POR LAS INSTRUCTORIAS hpl_tipo_materia = 'A'
 
-
--- =============================================
+	-- =============================================
 	-- Author:      <Fabio>
 	-- Create date: <2020-01-31 17:56:07.210>
 	-- Description: <Devuelve la data de las materias inscritas segun la misma forma de retorno del 
@@ -337,75 +344,75 @@ as
 begin
 	declare @cicloins nvarchar(10)
 
-		select carnet, codigo, materia, matricula, hor_descripcion, man_nomhor,
+	select carnet, codigo, materia, matricula, hor_descripcion, man_nomhor,
 		case when dias <> '' then substring(dias,1,len(dias)-1) else dbo.fechas_materias_especiales(hpl_codigo) end as dias,
 		plm_ciclo, hpl_codigo, hpl_codman, plm_electiva, plm_bloque_electiva, especial, hpl_tipo_materia, plm_uv
-		from (
-			select per_carnet 'carnet', mai_codmat 'codigo', 
-			--rtrim(isnull(plm_alias,'')) 'materia', 
-			rtrim(Isnull(plm_alias,'')) + case when tpm_mostrar_descripcion = 1 then ' (' + tpm_descripcion + ')' when tpm_mostrar_descripcion = 0 then ' ' end as materia,
-			--(
-			--	select count(1)
-			--	from Inscripcion.dbo.ra_mai_mat_inscritas, Inscripcion.dbo.ra_ins_inscripcion
-			--	where ins_codper = per_codigo
-			--	and mai_codins = ins_codigo --and ins_codcil = @codcil
-			--	and mai_codpla = plm.plm_codpla and mai_estado = 'I'
-			--	and mai_codmat = mat_codigo and ins_codper = @codper
-			--) + 1 
-			mai_matricula 
-			'matricula', hpl_descripcion 'hor_descripcion', man_nomhor,
-			case when hpl_lunes = 'S' then 'Lu-' ELSE '' END + 
-			case when hpl_martes = 'S' then 'Ma-' ELSE '' END + 
-			case when hpl_miercoles = 'S' then 'Mie-' ELSE '' END + 
-			case when hpl_jueves = 'S' then 'Ju-' ELSE '' END + 
-			case when hpl_viernes = 'S' then 'Vi-' ELSE '' END + 
-			case when hpl_sabado = 'S' then 'Sab-' ELSE '' END + 
-			case when hpl_domingo = 'S' then 'Dom-' ELSE '' END dias,
-			plm_ciclo, hpl_codigo, hpl_codman, plm_electiva, plm_bloque_electiva, mat_tipo 'especial', hpl_tipo_materia, plm_uv
-			from Inscripcion.dbo.ra_ins_inscripcion
-				inner join Inscripcion.dbo.ra_mai_mat_inscritas on mai_codins = ins_codigo
-				inner join ra_hpl_horarios_planificacion on hpl_codigo = mai_codhpl
-				join ra_man_grp_hor on man_codigo = hpl_codman
-				left join ra_aul_aulas on aul_codigo = hpl_codaul
-				join ra_tpm_tipo_materias on hpl_tipo_materia = tpm_tipo_materia
-				join ra_mat_materias on mat_codigo = mai_codmat
-				join ra_per_personas on per_codigo = ins_codper
-				join ra_alc_alumnos_carrera on alc_codper = per_codigo
-				join ra_plm_planes_materias as plm on plm.plm_codpla = alc_codpla and plm.plm_codmat = mai_codmat
-			where ins_codcil = @codcil and ins_codper = @codper
+	from (
+		select per_carnet 'carnet', mai_codmat 'codigo', 
+		--rtrim(isnull(plm_alias,'')) 'materia', 
+		rtrim(Isnull(plm_alias,'')) + case when tpm_mostrar_descripcion = 1 then ' (' + tpm_descripcion + ')' when tpm_mostrar_descripcion = 0 then ' ' end as materia,
+		--(
+		--	select count(1)
+		--	from Inscripcion.dbo.ra_mai_mat_inscritas, Inscripcion.dbo.ra_ins_inscripcion
+		--	where ins_codper = per_codigo
+		--	and mai_codins = ins_codigo --and ins_codcil = @codcil
+		--	and mai_codpla = plm.plm_codpla and mai_estado = 'I'
+		--	and mai_codmat = mat_codigo and ins_codper = @codper
+		--) + 1 
+		mai_matricula 
+		'matricula', hpl_descripcion 'hor_descripcion', man_nomhor,
+		case when hpl_lunes = 'S' then 'Lu-' ELSE '' END + 
+		case when hpl_martes = 'S' then 'Ma-' ELSE '' END + 
+		case when hpl_miercoles = 'S' then 'Mie-' ELSE '' END + 
+		case when hpl_jueves = 'S' then 'Ju-' ELSE '' END + 
+		case when hpl_viernes = 'S' then 'Vi-' ELSE '' END + 
+		case when hpl_sabado = 'S' then 'Sab-' ELSE '' END + 
+		case when hpl_domingo = 'S' then 'Dom-' ELSE '' END dias,
+		plm_ciclo, hpl_codigo, hpl_codman, plm_electiva, plm_bloque_electiva, mat_tipo 'especial', hpl_tipo_materia, plm_uv
+		from Inscripcion.dbo.ra_ins_inscripcion
+			inner join Inscripcion.dbo.ra_mai_mat_inscritas on mai_codins = ins_codigo
+			inner join ra_hpl_horarios_planificacion on hpl_codigo = mai_codhpl
+			join ra_man_grp_hor on man_codigo = hpl_codman
+			left join ra_aul_aulas on aul_codigo = hpl_codaul
+			join ra_tpm_tipo_materias on hpl_tipo_materia = tpm_tipo_materia
+			join ra_mat_materias on mat_codigo = mai_codmat
+			join ra_per_personas on per_codigo = ins_codper
+			join ra_alc_alumnos_carrera on alc_codper = per_codigo
+			join ra_plm_planes_materias as plm on plm.plm_codpla = alc_codpla and plm.plm_codmat = mai_codmat
+		where ins_codcil = @codcil and ins_codper = @codper
 
-			union
+		union
 
-			select per_carnet, case when hpl_tipo_materia in('A', 'I') then rtrim(ltrim(hpl_codmat)) + hpl_tipo_materia else hpl_codmat end, 
-			--case hpl_tipo_materia when 'A' then rtrim(ltrim(mat_nombre)) + ' ('+ tpm_descripcion+')' else mat_nombre end,
-			rtrim(Isnull(plm_alias,'')) + case when tpm_mostrar_descripcion = 1 then ' (' + tpm_descripcion + ')' when tpm_mostrar_descripcion = 0 then ' ' end as materia,
-			(
-				select count(1)
-				from Inscripcion.dbo.ra_mai_mat_inscritas, Inscripcion.dbo.ra_ins_inscripcion
-				where ins_codper = per_codigo
-				and mai_codins = ins_codigo and ins_codcil <> @codcil
-				and mai_codpla = plm.plm_codpla and mai_estado = 'I'
-				and mai_codmat = mat_codigo and ins_codper = @codper
-			) + 1 matricula, hpl_descripcion, man_nomhor,
-			case when hpl_lunes = 'S' then 'Lu-' ELSE '' END + 
-			case when hpl_martes = 'S' then 'Ma-' ELSE '' END + 
-			case when hpl_miercoles = 'S' then 'Mie-' ELSE '' END + 
-			case when hpl_jueves = 'S' then 'Ju-' ELSE '' END + 
-			case when hpl_viernes = 'S' then 'Vi-' ELSE '' END + 
-			case when hpl_sabado = 'S' then 'Sab-' ELSE '' END + 
-			case when hpl_domingo = 'S' then 'Dom-' ELSE '' END dias,
-			plm_ciclo, hpl_codigo, hpl_codman, plm_electiva, plm_bloque_electiva, case when hpl_tipo_materia in ('A', 'I') then 'S' else mat_tipo end mat_tipo, hpl_tipo_materia, plm_uv
-			from Inscripcion.dbo.ra_ins_inscripcion
-				inner join Inscripcion.dbo.ra_mai_mat_inscritas_especial on mai_codins = ins_codigo
-				inner join ra_hpl_horarios_planificacion on hpl_codigo = mai_codhor
-				left join ra_aul_aulas on aul_codigo = hpl_codaul
-				join ra_man_grp_hor on man_codigo = hpl_codman
-				join ra_tpm_tipo_materias on hpl_tipo_materia = tpm_tipo_materia
-				join ra_mat_materias on mat_codigo = mai_codmat
-				join ra_per_personas on per_codigo = ins_codper
-				join ra_alc_alumnos_carrera on alc_codper = per_codigo
-				join ra_plm_planes_materias as plm on plm.plm_codpla = alc_codpla and plm.plm_codmat = mai_codmat
-			where ins_codcil = @codcil and ins_codper = @codper
+		select per_carnet, case when hpl_tipo_materia in('A', 'I') then rtrim(ltrim(hpl_codmat)) + hpl_tipo_materia else hpl_codmat end, 
+		--case hpl_tipo_materia when 'A' then rtrim(ltrim(mat_nombre)) + ' ('+ tpm_descripcion+')' else mat_nombre end,
+		rtrim(Isnull(plm_alias,'')) + case when tpm_mostrar_descripcion = 1 then ' (' + tpm_descripcion + ')' when tpm_mostrar_descripcion = 0 then ' ' end as materia,
+		(
+			select count(1)
+			from Inscripcion.dbo.ra_mai_mat_inscritas, Inscripcion.dbo.ra_ins_inscripcion
+			where ins_codper = per_codigo
+			and mai_codins = ins_codigo and ins_codcil <> @codcil
+			and mai_codpla = plm.plm_codpla and mai_estado = 'I'
+			and mai_codmat = mat_codigo and ins_codper = @codper
+		) + 1 matricula, hpl_descripcion, man_nomhor,
+		case when hpl_lunes = 'S' then 'Lu-' ELSE '' END + 
+		case when hpl_martes = 'S' then 'Ma-' ELSE '' END + 
+		case when hpl_miercoles = 'S' then 'Mie-' ELSE '' END + 
+		case when hpl_jueves = 'S' then 'Ju-' ELSE '' END + 
+		case when hpl_viernes = 'S' then 'Vi-' ELSE '' END + 
+		case when hpl_sabado = 'S' then 'Sab-' ELSE '' END + 
+		case when hpl_domingo = 'S' then 'Dom-' ELSE '' END dias,
+		plm_ciclo, hpl_codigo, hpl_codman, plm_electiva, plm_bloque_electiva, case when hpl_tipo_materia in ('A', 'I') then 'S' else mat_tipo end mat_tipo, hpl_tipo_materia, plm_uv
+		from Inscripcion.dbo.ra_ins_inscripcion
+			inner join Inscripcion.dbo.ra_mai_mat_inscritas_especial on mai_codins = ins_codigo
+			inner join ra_hpl_horarios_planificacion on hpl_codigo = mai_codhor
+			left join ra_aul_aulas on aul_codigo = hpl_codaul
+			join ra_man_grp_hor on man_codigo = hpl_codman
+			join ra_tpm_tipo_materias on hpl_tipo_materia = tpm_tipo_materia
+			join ra_mat_materias on mat_codigo = mai_codmat
+			join ra_per_personas on per_codigo = ins_codper
+			join ra_alc_alumnos_carrera on alc_codper = per_codigo
+			join ra_plm_planes_materias as plm on plm.plm_codpla = alc_codpla and plm.plm_codmat = mai_codmat
+		where ins_codcil = @codcil and ins_codper = @codper
 	) t2
 
 	union
@@ -413,60 +420,60 @@ begin
 	select carnet, codigo, materia, matricula, hor_descripcion, man_nomhor,
 		case when dias <> '' then substring(dias,1,len(dias)-1) else dbo.fechas_materias_especiales(hpl_codigo) end as dias,
 		plm_ciclo, hpl_codigo, hpl_codman, plm_electiva, plm_bloque_electiva, especial, hpl_tipo_materia, plm_uv
-		from (
-			select per_carnet 'carnet', mai_codmat 'codigo', 
-			--rtrim(isnull(plm_alias,'')) 'materia', 
-			rtrim(Isnull(plm_alias,'')) + case when tpm_mostrar_descripcion = 1 then ' (' + tpm_descripcion + ')' when tpm_mostrar_descripcion = 0 then ' ' end as materia,
-			(
-				select count(1)
-				from ra_mai_mat_inscritas, ra_ins_inscripcion
-				where ins_codper = per_codigo
-				and mai_codins = ins_codigo and ins_codcil <> @codcil
-				and mai_codpla = plm.plm_codpla and mai_estado = 'I'
-				and mai_codmat = mat_codigo and ins_codper = @codper
-			) + 1 'matricula', hpl_descripcion 'hor_descripcion', man_nomhor,
-			case when hpl_lunes = 'S' then 'Lu-' ELSE '' END + 
-			case when hpl_martes = 'S' then 'Ma-' ELSE '' END + 
-			case when hpl_miercoles = 'S' then 'Mie-' ELSE '' END + 
-			case when hpl_jueves = 'S' then 'Ju-' ELSE '' END + 
-			case when hpl_viernes = 'S' then 'Vi-' ELSE '' END + 
-			case when hpl_sabado = 'S' then 'Sab-' ELSE '' END + 
-			case when hpl_domingo = 'S' then 'Dom-' ELSE '' END dias,
-			plm_ciclo, hpl_codigo, hpl_codman, plm_electiva, plm_bloque_electiva, mat_tipo 'especial', hpl_tipo_materia, plm_uv
-			from ra_ins_inscripcion
-				inner join ra_mai_mat_inscritas on mai_codins = ins_codigo
-				inner join ra_hpl_horarios_planificacion on hpl_codigo = mai_codhpl
-				join ra_man_grp_hor on man_codigo = hpl_codman
-				left join ra_aul_aulas on aul_codigo = hpl_codaul
-				join ra_tpm_tipo_materias on hpl_tipo_materia = tpm_tipo_materia
-				join ra_mat_materias on mat_codigo = mai_codmat
-				join ra_per_personas on per_codigo = ins_codper
-				join ra_alc_alumnos_carrera on alc_codper = per_codigo
-				join ra_plm_planes_materias as plm on plm.plm_codpla = alc_codpla and plm.plm_codmat = mai_codmat
-			where ins_codcil = @codcil and ins_codper = @codper
+	from (
+		select per_carnet 'carnet', mai_codmat 'codigo', 
+		--rtrim(isnull(plm_alias,'')) 'materia', 
+		rtrim(Isnull(plm_alias,'')) + case when tpm_mostrar_descripcion = 1 then ' (' + tpm_descripcion + ')' when tpm_mostrar_descripcion = 0 then ' ' end as materia,
+		(
+			select count(1)
+			from ra_mai_mat_inscritas, ra_ins_inscripcion
+			where ins_codper = per_codigo
+			and mai_codins = ins_codigo and ins_codcil <> @codcil
+			and mai_codpla = plm.plm_codpla and mai_estado = 'I'
+			and mai_codmat = mat_codigo and ins_codper = @codper
+		) + 1 'matricula', hpl_descripcion 'hor_descripcion', man_nomhor,
+		case when hpl_lunes = 'S' then 'Lu-' ELSE '' END + 
+		case when hpl_martes = 'S' then 'Ma-' ELSE '' END + 
+		case when hpl_miercoles = 'S' then 'Mie-' ELSE '' END + 
+		case when hpl_jueves = 'S' then 'Ju-' ELSE '' END + 
+		case when hpl_viernes = 'S' then 'Vi-' ELSE '' END + 
+		case when hpl_sabado = 'S' then 'Sab-' ELSE '' END + 
+		case when hpl_domingo = 'S' then 'Dom-' ELSE '' END dias,
+		plm_ciclo, hpl_codigo, hpl_codman, plm_electiva, plm_bloque_electiva, mat_tipo 'especial', hpl_tipo_materia, plm_uv
+		from ra_ins_inscripcion
+			inner join ra_mai_mat_inscritas on mai_codins = ins_codigo
+			inner join ra_hpl_horarios_planificacion on hpl_codigo = mai_codhpl
+			join ra_man_grp_hor on man_codigo = hpl_codman
+			left join ra_aul_aulas on aul_codigo = hpl_codaul
+			join ra_tpm_tipo_materias on hpl_tipo_materia = tpm_tipo_materia
+			join ra_mat_materias on mat_codigo = mai_codmat
+			join ra_per_personas on per_codigo = ins_codper
+			join ra_alc_alumnos_carrera on alc_codper = per_codigo
+			join ra_plm_planes_materias as plm on plm.plm_codpla = alc_codpla and plm.plm_codmat = mai_codmat
+		where ins_codcil = @codcil and ins_codper = @codper
 
-			union
+		union
 
-			select per_carnet, case when hpl_tipo_materia in('A', 'I') then rtrim(ltrim(hpl_codmat)) + hpl_tipo_materia else hpl_codmat end, 
-			--case hpl_tipo_materia when 'A' then rtrim(ltrim(mat_nombre)) + ' ('+ tpm_descripcion+')' else mat_nombre end,
-			rtrim(Isnull(plm_alias,'')) + case when tpm_mostrar_descripcion = 1 then ' (' + tpm_descripcion + ')' when tpm_mostrar_descripcion = 0 then ' ' end as materia,
-			(
-				select count(1)
-				from ra_mai_mat_inscritas, ra_ins_inscripcion
-				where ins_codper = per_codigo
-				and mai_codins = ins_codigo and ins_codcil <> @codcil
-				and mai_codpla = plm.plm_codpla and mai_estado = 'I'
-				and mai_codmat = mat_codigo and ins_codper = @codper
-			) + 1 matricula, hpl_descripcion, man_nomhor,
-			case when hpl_lunes = 'S' then 'Lu-' ELSE '' END + 
-			case when hpl_martes = 'S' then 'Ma-' ELSE '' END + 
-			case when hpl_miercoles = 'S' then 'Mie-' ELSE '' END + 
-			case when hpl_jueves = 'S' then 'Ju-' ELSE '' END + 
-			case when hpl_viernes = 'S' then 'Vi-' ELSE '' END + 
-			case when hpl_sabado = 'S' then 'Sab-' ELSE '' END + 
-			case when hpl_domingo = 'S' then 'Dom-' ELSE '' END dias,
-			plm_ciclo, hpl_codigo, hpl_codman, plm_electiva, plm_bloque_electiva, case when hpl_tipo_materia in ('A', 'I') then 'S' else mat_tipo end mat_tipo, hpl_tipo_materia, plm_uv
-			from ra_ins_inscripcion
+		select per_carnet, case when hpl_tipo_materia in('A', 'I') then rtrim(ltrim(hpl_codmat)) + hpl_tipo_materia else hpl_codmat end, 
+		--case hpl_tipo_materia when 'A' then rtrim(ltrim(mat_nombre)) + ' ('+ tpm_descripcion+')' else mat_nombre end,
+		rtrim(Isnull(plm_alias,'')) + case when tpm_mostrar_descripcion = 1 then ' (' + tpm_descripcion + ')' when tpm_mostrar_descripcion = 0 then ' ' end as materia,
+		(
+			select count(1)
+			from ra_mai_mat_inscritas, ra_ins_inscripcion
+			where ins_codper = per_codigo
+			and mai_codins = ins_codigo and ins_codcil <> @codcil
+			and mai_codpla = plm.plm_codpla and mai_estado = 'I'
+			and mai_codmat = mat_codigo and ins_codper = @codper
+		) + 1 matricula, hpl_descripcion, man_nomhor,
+		case when hpl_lunes = 'S' then 'Lu-' ELSE '' END + 
+		case when hpl_martes = 'S' then 'Ma-' ELSE '' END + 
+		case when hpl_miercoles = 'S' then 'Mie-' ELSE '' END + 
+		case when hpl_jueves = 'S' then 'Ju-' ELSE '' END + 
+		case when hpl_viernes = 'S' then 'Vi-' ELSE '' END + 
+		case when hpl_sabado = 'S' then 'Sab-' ELSE '' END + 
+		case when hpl_domingo = 'S' then 'Dom-' ELSE '' END dias,
+		plm_ciclo, hpl_codigo, hpl_codman, plm_electiva, plm_bloque_electiva, case when hpl_tipo_materia in ('A', 'I') then 'S' else mat_tipo end mat_tipo, hpl_tipo_materia, plm_uv
+		from ra_ins_inscripcion
 			inner join ra_mai_mat_inscritas_especial on mai_codins = ins_codigo
 			inner join ra_hpl_horarios_planificacion on hpl_codigo = mai_codhor
 			left join ra_aul_aulas on aul_codigo = hpl_codaul
@@ -476,12 +483,12 @@ begin
 			join ra_per_personas on per_codigo = ins_codper
 			join ra_alc_alumnos_carrera on alc_codper = per_codigo
 			join ra_plm_planes_materias as plm on plm.plm_codpla = alc_codpla and plm.plm_codmat = mai_codmat
-			where ins_codcil = @codcil and ins_codper = @codper
+		where ins_codcil = @codcil and ins_codper = @codper
 	) t
 end
 
 
--- =============================================
+	-- =============================================
 	-- Author:      <Todos>
 	-- Create date: <Miercoles 20 Mayo 2020>
 	-- Description: <Retorna el encabezado (ra_ins) y el detalle (ra_mai) de las materias inscritas>
@@ -505,44 +512,43 @@ begin
 	declare @insesp table (codigo int, codper int, mai_codmat nvarchar(12), mai_codhor int, mai_matricula int, mai_estado nvarchar(5))
 
 	SELECT per_carnet, rtrim(per_nombres) +' '+ltrim(per_apellidos) as nombre_ape,pla_alias_carrera, pla_anio,
-	concat('Clave de inscripción: ', isnull(ins_clave,'PRESENCIAL'),', Fecha de inscripción: ', Convert(varchar,ins_fecha))as fecha_ins,
-	@cicloins cicloins, ins_codigo, (select top 1 InicioCiclo from @tbl_inicio_clases) InicioCiclo
+		concat('Clave de inscripción: ', isnull(ins_clave,'PRESENCIAL'),', Fecha de inscripción: ', Convert(varchar,ins_fecha))as fecha_ins,
+		@cicloins cicloins, ins_codigo, (select top 1 InicioCiclo from @tbl_inicio_clases) InicioCiclo
 	from ra_pla_planes 
-	inner join ra_alc_alumnos_carrera ON ra_pla_planes.pla_codigo = ra_alc_alumnos_carrera.alc_codpla 
-	inner join ra_per_personas ON ra_alc_alumnos_carrera.alc_codper = ra_per_personas.per_codigo 
-	inner join ra_ins_inscripcion with (nolock) on ins_codper = per_codigo and ins_codcil = @codcil
+		inner join ra_alc_alumnos_carrera ON ra_pla_planes.pla_codigo = ra_alc_alumnos_carrera.alc_codpla 
+		inner join ra_per_personas ON ra_alc_alumnos_carrera.alc_codper = ra_per_personas.per_codigo 
+		inner join ra_ins_inscripcion with (nolock) on ins_codper = per_codigo and ins_codcil = @codcil
 	where ra_per_personas.per_codigo = @codper
 
 	insert into @ins(ins_codigo, ins_codper, mai_codmat, mai_codhpl, mai_matricula, mai_estado)
 	select ins_codigo, ins_codper, mai_codmat, mai_codhpl, mai_matricula, mai_estado
 	from ra_ins_inscripcion with (nolock)
-	join ra_mai_mat_inscritas with (nolock) on mai_codins = ins_codigo
+		join ra_mai_mat_inscritas with (nolock) on mai_codins = ins_codigo
 	where ins_codcil = @codcil and ins_codper = @codper
 
 	insert into @insesp(codigo, codper, mai_codmat, mai_codhor, mai_matricula, mai_estado)
 	select ins_codigo codigo, ins_codper codper, mai_codmat, mai_codhor, mai_matricula, mai_estado
 	from ra_ins_inscripcion with (nolock)
-	join ra_mai_mat_inscritas_especial with (nolock) on mai_codins = ins_codigo
+		join ra_mai_mat_inscritas_especial with (nolock) on mai_codins = ins_codigo
 	where ins_codcil = @codcil and ins_codper = @codper
 	
 	select rtrim(mat_codigo) mat_codigo,materia, hpl_descripcion,estado, mai_matricula, horas,
-	case when dias <> '' then dias else dbo.fechas_materias_especiales(hpl_codigo) 
-	end as dias,aul_nombre_corto
-	from
-	(
+		case when dias <> '' then dias else dbo.fechas_materias_especiales(hpl_codigo) 
+		end as dias,aul_nombre_corto
+	from (
 		select mat_codigo, rtrim(Isnull(plm_alias,'')) + 
-		case when tpm_mostrar_descripcion = 1 then ' (' + tpm_descripcion + ')'
-			when tpm_mostrar_descripcion = 0 then ' '
-		end as Materia, hpl_descripcion, hpl_codigo,
-		case when mai_estado = 'I' then 'Ins' else 'Ret' end estado, mai_matricula,
-		isnull(man_nomhor,'sin Asignar')as horas,
-		case when hpl_lunes = 'S' then 'LUNES-' ELSE '' END + 
-		case when hpl_martes = 'S' then 'MARTES-' ELSE '' END + 
-		case when hpl_miercoles = 'S' then 'MIERCOLES-' ELSE '' END + 
-		case when hpl_jueves = 'S' then 'JUEVES-' ELSE '' END + 
-		case when hpl_viernes = 'S' then 'VIERNES-' ELSE '' END + 
-		case when hpl_sabado = 'S' then 'SABADO-' ELSE '' END + 
-		case when hpl_domingo = 'S' then 'DOMINGO-' ELSE '' END DIAS,aul_nombre_corto
+			case when tpm_mostrar_descripcion = 1 then ' (' + tpm_descripcion + ')'
+				when tpm_mostrar_descripcion = 0 then ' '
+			end as Materia, hpl_descripcion, hpl_codigo,
+			case when mai_estado = 'I' then 'Ins' else 'Ret' end estado, mai_matricula,
+			isnull(man_nomhor,'sin Asignar')as horas,
+			case when hpl_lunes = 'S' then 'LUNES-' ELSE '' END + 
+			case when hpl_martes = 'S' then 'MARTES-' ELSE '' END + 
+			case when hpl_miercoles = 'S' then 'MIERCOLES-' ELSE '' END + 
+			case when hpl_jueves = 'S' then 'JUEVES-' ELSE '' END + 
+			case when hpl_viernes = 'S' then 'VIERNES-' ELSE '' END + 
+			case when hpl_sabado = 'S' then 'SABADO-' ELSE '' END + 
+			case when hpl_domingo = 'S' then 'DOMINGO-' ELSE '' END DIAS, aul_nombre_corto
 		from @ins
 		join ra_per_personas on per_codigo = ins_codper
 		join ra_alc_alumnos_carrera on alc_codper = per_codigo
@@ -583,13 +589,12 @@ begin
 end
 
 
--- =============================================
+	-- =============================================
 	-- Author:      <Todos>
 	-- Create date: <Miercoles 20 Mayo 2020>
 	-- Description: <Retorna el encabezado (ra_ins) y el detalle (ra_mai) de las materias inscritas>
 	-- =============================================
 	-- exec web_ins_matinscritas_nodjs_azure 228534, 125
-
 ALTER procedure [dbo].[web_ins_matinscritas_nodjs_azure]
 	@codper int,
 	@codcil int 
@@ -629,8 +634,8 @@ begin
 	where ins_codcil = @codcil and ins_codper = @codper
 
 	select rtrim(mat_codigo) mat_codigo,materia, hpl_descripcion,estado, mai_matricula, horas,
-	case when dias <> '' then dias else dbo.fechas_materias_especiales(hpl_codigo) 
-	end as dias,aul_nombre_corto
+		case when dias <> '' then dias else dbo.fechas_materias_especiales(hpl_codigo) 
+		end as dias,aul_nombre_corto
 	from
 	(
 		select mat_codigo, rtrim(Isnull(plm_alias,'')) + 
@@ -685,7 +690,5 @@ begin
 		join ra_tpm_tipo_materias on hpl_tipo_materia = tpm_tipo_materia
 	) t
 end
-
-
 
 --#endregion CAMBIOS SP´S POR LAS INSTRUCTORIAS hpl_tipo_materia = 'A'

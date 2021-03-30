@@ -1,25 +1,32 @@
-<<<<<<< HEAD
-declare @opm_codigo_max int = (select max(opm_codigo)+1 from adm_opm_opciones_menu)
-insert into adm_opm_opciones_menu(opm_codigo, opm_nombre, opm_opcion_padre, opm_sistema, opm_link, opm_orden) 
-values (@opm_codigo_max, 'Calendarios académicos', 22, 'U', 'logo.html', 59);
+--declare @opm_codigo_max int = (select max(opm_codigo)+1 from adm_opm_opciones_menu)
+--insert into adm_opm_opciones_menu(opm_codigo, opm_nombre, opm_opcion_padre, opm_sistema, opm_link, opm_orden) 
+--values (@opm_codigo_max, 'Calendarios académicos', 22, 'U', 'logo.html', 59);
 
-insert into adm_opm_opciones_menu(opm_codigo, opm_nombre, opm_opcion_padre, opm_sistema, opm_link, opm_orden) values
-((select max(opm_codigo)+1 from adm_opm_opciones_menu), 'Alumnos presenciales', @opm_codigo_max ,'U', 'ra_caa_calendario_acad.aspx', 1),
-((select max(opm_codigo)+2 from adm_opm_opciones_menu), 'Alumnos virtuales', @opm_codigo_max,'U', 'web_calendario_academico_v.aspx', 2)
+--insert into adm_opm_opciones_menu(opm_codigo, opm_nombre, opm_opcion_padre, opm_sistema, opm_link, opm_orden) values
+--((select max(opm_codigo)+1 from adm_opm_opciones_menu), 'Alumnos presenciales', @opm_codigo_max ,'U', 'ra_caa_calendario_acad.aspx', 1),
+--((select max(opm_codigo)+2 from adm_opm_opciones_menu), 'Alumnos virtuales', @opm_codigo_max,'U', 'web_calendario_academico_v.aspx', 2)
 
-=======
+-- drop table web_caav_calendario_acad_virtual
+create table web_caav_calendario_acad_virtual(
+	caav_codigo int primary key identity(1,1),
+	caav_codmat nvarchar(15),
+	caav_codpla int,
+	caav_evaluacion int,
+	caav_fecha_limite datetime,
+	caav_bloque int,
+	caav_usuario int,
+	caav_fecha_registro datetime default getdate()
+)
+-- select * from web_caav_calendario_acad_virtual
 
-select * from web_caav_calendario_acad_virtual
-
->>>>>>> 259fdcc00c67ef818fc08380765c1facb90e6985
-create procedure sp_fecha_limite_prorroga
 	-- =============================================
 	-- Author:      <Fabio>
 	-- Create date: <2020-02-17 14:25:18.043>
 	-- Description: <Devuelve la fecha limite para solicitar prorroga de la materia @codmat para la evaluacion @ev>
 	-- =============================================
-	-- sp_fecha_limite_prorroga 1, 'INT2-E', '01', 122, 1
-	-- sp_fecha_limite_prorroga 1, 'ALG1-V', '01', 122, 1
+	-- exec dbo.sp_fecha_limite_prorroga 1, 'INT2-E', '01', 122, 1
+	-- exec dbo.sp_fecha_limite_prorroga 1, 'ALG1-V', '01', 122, 1
+create procedure sp_fecha_limite_prorroga
 	@opcion int,
 	@codmat varchar(125),
 	@seccion varchar(50),
@@ -74,29 +81,12 @@ begin
 
 end
 
-create table web_caav_calendario_acad_virtual(
-	caav_codigo int primary key identity(1,1),
-	caav_codmat nvarchar(15),
-	caav_codpla int,
-	caav_evaluacion int,
-	caav_fecha_limite datetime,
-	caav_bloque int,
-	caav_usuario int,
-	caav_fecha_registro datetime default getdate()
-)
-
-
-
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
--- =============================================
--- Author:		<Adones>
--- Create date: <15.02.2020>
--- Description:	<Mantenimiento de el calendario academico para virtuales.>
--- =============================================
-
+	-- =============================================
+	-- Author:		<Adones>
+	-- Create date: <15.02.2020>
+	-- Description:	<Mantenimiento de el calendario academico para virtuales.>
+	-- =============================================
+	-- exec dbo.sp_calendario_academico_virtual 
 CREATE PROCEDURE [dbo].[sp_calendario_academico_virtual]
 	@opcion int,
 	@codmat nvarchar(10),
@@ -107,7 +97,7 @@ CREATE PROCEDURE [dbo].[sp_calendario_academico_virtual]
 	@coduser int
 AS
 BEGIN
-set dateformat dmy
+	set dateformat dmy
 	if @opcion = 1
 	begin		
 		declare @fecha_evaluacion nvarchar(10)
@@ -141,8 +131,4 @@ set dateformat dmy
 			
 		end catch
 	end
-<<<<<<< HEAD
 END
-=======
-END
->>>>>>> 259fdcc00c67ef818fc08380765c1facb90e6985

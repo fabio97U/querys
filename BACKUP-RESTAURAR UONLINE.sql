@@ -1,0 +1,12 @@
+--BACKUP DE DB (en produccion)
+----BACKUP DATABASE [uonline] TO  DISK = N'H:\uonline\uonline04012021.bak' WITH NOFORMAT, NOINIT,  NAME = N'uonline', SKIP, NOREWIND, NOUNLOAD, 
+----COMPRESSION,  STATS = 10
+----GO
+
+--RESTAURAR BD (en la demo)
+----use master
+----ALTER DATABASE [uonline] SET SINGLE_USER WITH ROLLBACK IMMEDIATE
+----RESTORE DATABASE [uonline] FROM  DISK = N'C:\BD\uonline04012021.bak' WITH  FILE = 1,  
+----MOVE N'ra' TO N'C:\Program Files\Microsoft SQL Server\MSSQL12.MSSQLSERVER\MSSQL\DATA\uonline.mdf',  
+----MOVE N'ra_log' TO N'C:\Program Files\Microsoft SQL Server\MSSQL12.MSSQLSERVER\MSSQL\DATA\uonline_log.ldf',  NOUNLOAD,  REPLACE,  STATS = 5
+----ALTER DATABASE [uonline] SET MULTI_USER

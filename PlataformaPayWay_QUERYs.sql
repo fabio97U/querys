@@ -1,6 +1,5 @@
-select * from dbo.vst_pw_trans_denegadas
-
-select * from ra_rte_registro_tecnicos_egresados
+--select * from dbo.vst_pw_trans_denegadas
+--select * from dbo.vst_pw_trans_aprobadas
 
 select * from col_mov_movimientos 
 where mov_usuario = 'payway_cuscatlan'
@@ -9,23 +8,20 @@ update col_mov_movimientos set mov_codper = mov_codper * -1 where mov_usuario = 
 
 select * from col_dmo_det_mov
 where dmo_codmov in (
-select mov_codigo from col_mov_movimientos 
-where mov_usuario = 'payway_cuscatlan'
+	select mov_codigo from col_mov_movimientos 
+	where mov_usuario = 'payway_cuscatlan'
 )
 
+select * from con_cuc_cuentas_contables where cuc_descripcion like '%enseñ%'
+select * from adm_ban_bancos
+select * from col_pal_pagos_linea
 
-
-
-
---insert into adm_ban_bancos (ban_codigo, ban_nombre, ban_codcuc, ban_tarjetaCredito)
---values (54, 'CUSCATLAN CUENTA plataforma PayWay', 15, 0)
-
---insert into col_pal_pagos_linea(pal_nombre, pal_usuario, pal_banco, pal_descripcion_pago)
---values ('Pagos PayWay Banco Cuscatlan', 'payway_cuscatlan', 54, 'Pago en Linea plataforma PayWay Cuscatlan')--16
-
---select * from adm_ban_bancos
+insert into col_pal_pagos_linea(pal_nombre, pal_usuario, pal_banco, pal_descripcion_pago)
+values ('Pagos PayWay Banco Cuscatlan', 'payway_cuscatlan', 9, 'Pago en Linea plataforma PayWay Cuscatlan')--16
+--LIC. Rivas
+--select * from adm_ban_bancos--AMARAR A CODIGO 9********
 --inner join col_pal_pagos_linea on pal_banco = ban_codigo
---where ban_codigo = 54
+--where ban_codigo = 9
 
 -- drop table pw_tcrp_tabla_codigos_retorno_payway
 create table pw_tcrp_tabla_codigos_retorno_payway
@@ -40,8 +36,7 @@ create table pw_tcrp_tabla_codigos_retorno_payway
 --('050', 'EL TARJETAHABIENTE NO CUENTA CON DISPONIBILIDAD PARA LA TRANSACCION O EL EMISOR HA DENEGADO LA TRANSACCION POR POLITICAS'), ('051', 'LA TARJETA HA VENCIDO'), ('055', 'LA TARJETA NO TIENE AUTORIZACION PARA UTILIZARSE EN PAGO ELECTRONICO O EL EMISOR HA DENEGADO LA TRANSACCION POR POLITICAS'), ('056', 'EL TARJETAHABIENTE PRESENTA PROBLEMAS DE MORA, SOBREGIRO, ETC., O EL EMISOR HA DENEGADO LA TRANSACCION POR POLITICAS'), ('057', 'LA TARJETA HA SIDO REEMPLAZADA, PERDIDA O ROBADA'), ('059', 'EL TARJETAHABIENTE PRESENTA RESTRICCION EN LA CUENTA, O EL EMISOR HA DENEGADO LA TRANSACCION POR POLITICAS'), ('060', 'LA TARJETA HA SIDO CANCELADA O NO EXISTE LA CUENTA'), ('073', 'LA TARJETA NO TIENE AUTORIZACION PARA UTILIZARSE EN PAGO ELECTRONICO O EL EMISOR HA DENEGADO LA TRANSACCION POR POLITICAS'), ('074', 'LA TARJETA NO TIENE AUTORIZACION POR PARTE DEL EMISOR O EL EMISOR HA DENEGADO LA TRANSACCION POR POLITICAS'), ('076', 'EL TARJETAHABIENTE NO CUENTA CON DISPONIBILIDAD PARA LA TRANSACCION'), ('082', 'LA TARJETA HA ALCANZADO EL MAXIMO DE TRANSACCIONES PERMITIDO'), ('086', 'EL EMISOR NO RESPONDE A LA SOLICITUD DE TRANSACCION O EL TARJETAHABIENTE NO ESTA AUTORIZADO PARA REALIZAR LA TRANSACCION POR EL MONTO SOLICITADO'), ('089', 'LA TARJETA HA SIDO INACTIVADA, CERRADA O EL EMISOR HA DENEGADO LA TRANSACCION POR POLITICAS'), ('095', 'EL MONTO DE LA TRANSACCION SUPERA EL MAXIMO PERMITIDO PARA LA TARJETA'), ('097', 'LA TARJETA PRESENTA PROBLEMAS EN LA COMPOSICION DE SUS DIGITOS, HA SIDO MAL DIGITADA O EL EMISOR HA DENEGADO LA TRANSACCION POR POLITICAS'), ('101', 'EL EMISOR HA DENEGADO LA TRANSACCION POR POLITICAS'), ('107', 'LA TARJETA HA ALCANZADO EL MAXIMO DE TRANSACCIONES DIARIAS PERMITIDAS'), ('200', 'LA TARJETA HA SIDO INVALIDADA'), ('204', 'EL MONTO DE LA TRANSACCION SUPERA EL MAXIMO PERMITIDO PARA LA TARJETA O EL MONTO SUPERA EL MAXIMO PERMITIDO AL COMERCIO'), ('205', 'EL TARJETAHABIENTE NO ESTA AUTORIZADO PARA REALIZAR LA TRANSACCION POR EL MONTO SOLICITADO O EL EMISOR HA DENEGADO LA TRANSACCION POR POLITICAS'), ('206', 'LA TARJETA HA SIDO CANCELADA'), ('810', 'EL EMISOR DE LA TARJETA NO AUTORIZO LA TRANSACCION EN EL TIEMPO ESTIPULADO'), ('901', 'LA TARJETA HA VENCIDO O LA FECHA DE EXPIRACION PROPORCIONADA NO ES LA CORRECTA'), ('903', 'LA TARJETA HA SIDO ROBADA'), ('909', 'LA TARJETA HA SIDO REEMPLAZADA O PRESENTA PROBLEMAS QUE DEBEN SER ACLARADOS CON EL EMISOR'), ('97', 'NO SE OBTUVO UNA RESPUESTA DE PARTE DEL EMISOR Y/O PROCESADOR EN EL TIEMPO ESTABLECIDO. LA TRANSACCION SERA CONFIRMADA SI FUE APLICADA O NO'), ('98', 'LA TARJETA FUE DENEGADA Y REPORTADA PREVIAMENTE DEBIDO A UNA TRANSACCION DENEGADA QUE NO PUEDE REINTENTARSE. ES NECESARIO CAMBIO DE TARJETA'), ('99', 'ERROR COMUNICANDOSE CON EL EMISOR Y/O PROCESADOR. LA TRANSACCION SERA REPROGRAMADA EN LAS SIGUIENTES HORAS'), ('208', 'EL FORMATO DE FECHA DE EXPIRACION PROPORCIONADO ES INCORRECTO'), ('01', 'EL EMISOR HA DENEGADO LA TRANSACCION POR POLITICAS'), ('02', 'LA TARJETA NO TIENE AUTORIZACION POR PARTE DEL EMISOR O EL EMISOR HA DENEGADO LA TRANSACCION POR POLITICAS'), ('03', 'EL EMISOR HA DENEGADO LA TRANSACCION POR POLITICAS'), ('04', 'LA TARJETA HA SIDO BLOQUEADA'), ('05', 'EL EMISOR HA DENEGADO LA TRANSACCION POR POLITICAS'), ('07', 'LA TARJETA HA SIDO BLOQUEADA'), ('12', 'LA TARJETA NO TIENE AUTORIZACION PARA UTILIZARSE EN PAGO ELECTRONICO O EL EMISOR HA DENEGADO LA TRANSACCION POR POLITICAS'), ('13', 'EL TARJETAHABIENTE NO ESTA AUTORIZADO PARA REALIZAR LA TRANSACCION POR EL MONTO SOLICITADO O EL EMISOR HA DENEGADO LA TRANSACCION POR POLITICAS'), ('14', 'LA TRANSACCION PRESENTA PROBLEMAS EN EL PROCESAMIENTO O EL EMISOR HA DENEGADO LA TRANSACCION POR POLITICAS'), ('15', 'EL EMISOR DE LA TARJETA NO RESPONDE A LA SOLICITUD DE TRANSACCION'), ('25', 'EL EMISOR HA DENEGADO LA TRANSACCION POR POLITICAS'), ('30', 'LA TRANSACCION PRESENTA PROBLEMAS O EL EMISOR HA DENEGADO LA TRANSACCION POR POLITICAS'), ('31', 'LA TARJETA NO PUEDE SER AUTORIZADA POR EL EMISOR'), ('39', 'LA TRANSACCION NO PUEDE COMPLETARSE'), ('41', 'LA TARJETA HA SIDO PERDIDA'), ('43', 'LA TARJETA HA SIDO ROBADA'), ('50', 'EL EMISOR HA DENEGADO LA TRANSACCION POR POLITICAS'), ('51', 'EL TARJETAHABIENTE NO CUENTA CON DISPONIBILIDAD PARA LA TRANSACCION'), ('52', 'LA TRANSACCION NO PUEDE COMPLETARSE'), ('53', 'LA TRANSACCION NO PUEDE COMPLETARSE'), ('54', 'LA TARJETA HA VENCIDO'), ('55', 'EL PIN INGRESADO NO ES CORRECTO. LA TRANSACCION NO PUEDE PROCESARSE'), ('57', 'LA TRANSACCION NO PUEDE PROCESARSE'), ('58', 'LA TRANSACCION NO ESTA AUTORIZADA'), ('59', 'LA TARJETA PRESENTA SOSPECHA DE FRAUDE'), ('61', 'EL MONTO DE LA TRANSACCION SUPERA EL MAXIMO PERMITIDO PARA LA TARJETA'), ('62', 'EL TARJETAHABIENTE PRESENTA PROBLEMAS EN LA CUENTA O EL EMISOR HA DENEGADO LA TRANSACCION POR POLITICAS'), ('83', 'LA TRANSACCION NO PUEDE PROCESARSE'), ('85', 'EL CODIGO DE SEGURIDAD DE LA TARJETA ES INVALIDO'), ('87', 'EL CODIGO DE SEGURIDAD DE LA TARJETA ES INVALIDO'), ('89', 'LA TRANSACCION NO ESTA AUTORIZADA PARA EL COMERCIO'), ('91', 'EL EMISOR DE LA TARJETA NO RESPONDE A LA SOLICITUD DE TRANSACCION'), ('92', 'EL EMISOR DE LA TARJETA NO RESPONDE A LA SOLICITUD DE TRANSACCION'), ('93', 'LA TRANSACCION NO PUEDE PROCESARSE'), ('94', 'LA TRANSACCION HA SIDO DUPLICADA'), ('96', 'LA TRANSACCION NO PUEDE INICIARSE'), ('19', 'LA TRANSACCION DEBE REINTENTARSE NUEVAMENTE'), ('76', 'EL PRODUCTO NO ESTA AUTORIZADO PARA EL COMERCIO'), ('77', 'EL EMISOR HA DENEGADO LA TRANSACCION POR POLITICAS'), ('78', 'EL EMISOR HA DENEGADO LA TRANSACCION POR POLITICAS'), ('80', 'EL EMISOR HA DENEGADO LA TRANSACCION POR POLITICAS'), ('95', 'EL EMISOR HA DENEGADO LA TRANSACCION POR POLITICAS')
 
 -- drop table pw_transa_transaccion_aprobada
-create table pw_transa_transaccion_aprobada
-(
+create table pw_transa_transaccion_aprobada (
 	transa_codigo int primary key identity (1, 1),
 	transa_codper int,
 	transa_codcil int,
@@ -58,8 +53,7 @@ create table pw_transa_transaccion_aprobada
 -- select * from pw_transa_transaccion_aprobada
 
 -- drop table pw_transd_transaccion_denegada
-create table pw_transd_transaccion_denegada
-(
+create table pw_transd_transaccion_denegada (
 	transd_codigo int primary key identity (1, 1),
 	transd_codper int,
 	transd_codcil int,
@@ -84,7 +78,7 @@ create table pw_transd_transaccion_denegada
 	-- Description: <Devuelve las transacciones aprobadas de PayWay>
 	-- =============================================
 	-- select * from dbo.vst_pw_trans_aprobadas where transa_codper = 173322
-alter VIEW dbo.vst_pw_trans_aprobadas
+create VIEW dbo.vst_pw_trans_aprobadas
 AS
 	select 
 		transa_codigo, transa_codper, transa_codcil, transa_npe, transa_monto, transa_pwoAuthorizationNumber, transa_pwoReferenceNumber, 
@@ -106,7 +100,7 @@ AS
 	-- Description: <Devuelve las transacciones denegadas de PayWay>
 	-- =============================================
 	-- select * from dbo.vst_pw_trans_denegadas where transd_codper = 173322
-alter VIEW dbo.vst_pw_trans_denegadas
+create VIEW dbo.vst_pw_trans_denegadas
 AS
 	select 
 		transd_codigo, transd_codper, transd_codcil, transd_npe, transd_monto, transd_codtcrp, transd_pwoReturnMessageTrx, 
@@ -126,7 +120,7 @@ AS
 	-- Description: <Realiza el proceso de los pagos utilizando la plataforma de PayWay>
 	-- =============================================
 	-- exec sp_pagos_payway 1, 181324, 0, '', 0/*16*/
-alter procedure sp_pagos_payway 
+create procedure sp_pagos_payway 
 	@opcion int = 0,
 	@codper int = 0,
 	@codtde int = 0,
@@ -170,7 +164,7 @@ go
 	-- Create date: <2020-11-12 01:10:45.416>
 	-- Description: <Realiza la inserción/muestra de la respuesta de PayWay cuando el pago es aprobado o denegado>
 	-- =============================================
-alter procedure sp_insertar_respuesta_payway
+create procedure sp_insertar_respuesta_payway
 	@opcion int = 0,
 	@codper int = 0,
 	@codcil int = 0,
@@ -246,6 +240,7 @@ begin
 
 end
 go
+
 
 
 
@@ -368,8 +363,8 @@ BEGIN
 			--select * from col_art_archivo_tal_proc_grad_tec_dise_mora where per_codigo = @codper and ciclo > @codcil
 			--	PRE ESPECIALIDAD TECNICOS
 			select distinct art.per_codigo, art.per_carnet, art.per_nombres_apellidos,
-				art.tmo_arancel, art.fecha as fel_fecha_mora, art.ciclo as ciclo, art.mciclo, tmo.tmo_descripcion, 
-				case when art.fecha >= getdate() then art.tmo_valor else art.tmo_valor_mora end as Monto, NPE			
+				art.tmo_arancel, art.fel_fecha_mora as fel_fecha_mora, art.ciclo as ciclo, art.mciclo, tmo.tmo_descripcion, 
+				case when art.fel_fecha_mora >= getdate() then art.tmo_valor else art.tmo_valor_mora end as Monto, NPE			
 			from col_art_archivo_tal_proc_grad_tec_dise_mora as art
 				--inner join alumnos_por_arancel_maestria as apama on apama.codcil = art.ciclo and apama.per_codigo = art.per_codigo
 				inner join col_fel_fechas_limite_tecnicos_dise as fel on fel.fel_codcil = art.ciclo --and fel.fel_codtmo = apama.tmo_codigo --and fel.origen = art.origen
@@ -389,7 +384,7 @@ BEGIN
 			---- EXEC sp_cuotas_estudiantes_maestrias 3,188459
 			--GROUP BY art.per_codigo, art.per_carnet, art.per_nombres_apellidos, art.tmo_arancel,
 			--art.fecha, art.mciclo, tmo.tmo_descripcion, art.tmo_valor
-			order by art.fecha asc
+			order by art.fel_fecha_mora asc
 		end	--	if exists(select 1 from col_art_archivo_tal_preesp_mora where per_codigo = @codper and ciclo > @codcil)
 
 		if exists(select 1 from col_art_archivo_tal_proc_grad_tec_mora where per_codigo = @codper and ciclo > @codcil)
@@ -609,4 +604,3 @@ BEGIN
 		--select * from alumnos_por_arancel_maestria_posgrado where per_codigo = 193884
 	END
 END
-

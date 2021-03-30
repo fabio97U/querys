@@ -1,26 +1,27 @@
---INICIO: se añade el valor -/+ 15 a la tpmenara
---Primera cuota se le quita los $15 de descuento
-update col_tpmenara_tipo_mensualidad_aranceles 
-set tpmenara_monto_pagar = tpmenara_monto_pagar + 15, 
-tpmenara_monto_arancel_descuento = tpmenara_monto_arancel_descuento - 15,
-tpmenara_arancel_descuento = 0
---select * from col_tpmenara_tipo_mensualidad_aranceles 
-where tpmenara_codtipmen in (5, 6, 7) and tpmenara_arancel in ('C-01','V-51','V-101')
+----INICIO: se añade el valor -/+ 15 a la tpmenara
+----Primera cuota se le quita los $15 de descuento
+--update col_tpmenara_tipo_mensualidad_aranceles 
+--set tpmenara_monto_pagar = tpmenara_monto_pagar + 15, 
+--tpmenara_monto_arancel_descuento = tpmenara_monto_arancel_descuento - 15,
+--tpmenara_arancel_descuento = 0
+----select * from col_tpmenara_tipo_mensualidad_aranceles 
+--where tpmenara_codtipmen in (5, 6, 7) and tpmenara_arancel in ('C-01','V-51','V-101')
 
---Segunta cuota se le añade los $15 de descuento
-update col_tpmenara_tipo_mensualidad_aranceles 
-set tpmenara_monto_pagar = tpmenara_monto_pagar - 15, 
-tpmenara_monto_arancel_descuento = tpmenara_monto_arancel_descuento + 15
---select * from col_tpmenara_tipo_mensualidad_aranceles 
-where tpmenara_codtipmen in (5, 6, 7) and tpmenara_arancel in ('C-02','V-52','V-102')
---FIN: se añade el valor -/+ 15 a la tpmenara
+----Segunta cuota se le añade los $15 de descuento
+--update col_tpmenara_tipo_mensualidad_aranceles 
+--set tpmenara_monto_pagar = tpmenara_monto_pagar - 15, 
+--tpmenara_monto_arancel_descuento = tpmenara_monto_arancel_descuento + 15
+----select * from col_tpmenara_tipo_mensualidad_aranceles 
+--where tpmenara_codtipmen in (5, 6, 7) and tpmenara_arancel in ('C-02','V-52','V-102')
+----FIN: se añade el valor -/+ 15 a la tpmenara
 
 --INICIO: borrar alumnos ya con el descuento
 --DELETE
+declare @codcil int = 125
 select * 
 from col_detmen_detalle_tipo_mensualidad where detmen_codtpmenara in (
 select tpmenara_codigo from col_tpmenara_tipo_mensualidad_aranceles where tpmenara_codtipmen in (5, 6, 7)
-) and detmen_codcil = 123
+) and detmen_codcil = @codcil
 --FIN: borrar alumnos ya con el descuento
 
 --INICIO: selects de la data a generar
@@ -31,7 +32,7 @@ select ins_codper, per_carnet, per_codvac from (
 	select ins_codper, per_carnet, per_codvac, count(1) inscritas from ra_ins_inscripcion
 	inner join ra_mai_mat_inscritas on mai_codins = ins_codigo
 	inner join ra_per_personas on per_codigo = ins_codper
-	where ins_codcil = 123 and mai_estado = 'I' and per_tipo = 'U' and per_estado in ('A')-- and ins_codper = 45929
+	where ins_codcil = @codcil and mai_estado = 'I' and per_tipo = 'U' and per_estado in ('A')-- and ins_codper = 45929
 	group by ins_codper, per_carnet, per_codvac
 	having count(1) = 1
 ) t
@@ -51,11 +52,11 @@ select codper, carnet, codvac, (select tipmen_codigo from col_tipmen_tipo_mensua
 		join ra_ins_inscripcion on ins_codper=per_codigo
 		join col_tmo_tipo_movimiento as tmo on dmo_codtmo = tmo.tmo_codigo
 		join vst_aranceles_x_evaluacion as v on v.are_codtmo = tmo.tmo_codigo
-		where dmo_codcil = 123 and per_tipo='U' and mov_estado <> 'A'
+		where dmo_codcil = @codcil and per_tipo='U' and mov_estado <> 'A'
 		and are_tipo = 'PREGRADO' and mov_codper = a.codper
 	) t 
 ) 'aplica_descuento_a_cuota',
-isnull((select top 1 1 from col_detmen_detalle_tipo_mensualidad where detmen_codcil = 123 and detmen_codper = a.codper), 0) 'posee_detmen'
+isnull((select top 1 1 from col_detmen_detalle_tipo_mensualidad where detmen_codcil = @codcil and detmen_codper = a.codper), 0) 'posee_detmen'
 from @inscribieron_una as a
 
 --select * from @alumnos_generar_descuento
@@ -76,10 +77,10 @@ begin
 	begin
 		select 'descuento'
 		--Inserta a la tipmen
-		exec tal_GeneraDataTalonario_alumnos_tipo_mensualidad_especial @opcion = 4, @codcilGenerar = 123, @codper = @per_codper, @codusr = 407, @codtipmen = @tipmen_codigo
+		exec tal_GeneraDataTalonario_alumnos_tipo_mensualidad_especial @opcion = 4, @codcilGenerar = @codcil, @codper = @per_codper, @codusr = 378, @codtipmen = @tipmen_codigo
 
 		----Genera la data al talonario con descuento
-		exec tal_GeneraDataTalonario_alumnos_tipo_mensualidad_especial @opcion = 1, @codcilGenerar = 123, @codper = @per_codper
+		exec tal_GeneraDataTalonario_alumnos_tipo_mensualidad_especial @opcion = 1, @codcilGenerar = @codcil, @codper = @per_codper
 	end
     fetch next from m_cursor into @per_codper, @tipmen_codigo, @aplica_descuento_a_cuota, @posee_detmen
 end      
