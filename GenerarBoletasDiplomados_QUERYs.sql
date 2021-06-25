@@ -29,6 +29,50 @@ select * from adm_opm_opciones_menu
 --1033, CURSO ESPECIALIZADO: INVESTIGACION SOCIAL
 	select tmo_arancel, tmo_descripcion, tmo_valor, * from col_tmo_tipo_movimiento where tmo_arancel in ('C-209', 'C-210')
 
+
+--Generados el 07/04/2021
+--1035 DIPLOMADO: INTERVENCIÓN CON PROGRAMACIÓN NEUROLINGUISTICA E INTELIGENCIA EMOCIONAL
+	--Graduado UTEC
+	select tmo_arancel, tmo_descripcion, tmo_valor, * from col_tmo_tipo_movimiento where tmo_arancel in ('D-286')
+	--Externo UTEC
+	select tmo_arancel, tmo_descripcion, tmo_valor, * from col_tmo_tipo_movimiento where tmo_arancel in ('D-278')
+
+--insert into cil_cpd_cuotas_pagar_diplomado (cpd_coddip, cpd_codtmo, cpd_orden, cpd_graduado_utec)
+--values (1035, 3685, 0, 1), (1035, 3685, 1, 1),
+--(1035, 3647, 0, 0), (1035, 3647, 1, 0)
+
+
+--1036 DIPLOMADO: ADMINISTRACIÓN DE PROYECTOS CON ENFOQUE TECNOLÓGICO
+	--Graduado UTEC
+	select tmo_arancel, tmo_descripcion, tmo_valor, * from col_tmo_tipo_movimiento where tmo_arancel in ('D-282', 'D-283')
+	--Externo UTEC
+	select tmo_arancel, tmo_descripcion, tmo_valor, * from col_tmo_tipo_movimiento where tmo_arancel in ('D-284', 'D-285')
+--1037 DIPLOMADO: EXCEL AVANZADO COMO HERRAMIENTA PARA LA GESTIÓN DE LOS NEGOCIOS
+	select tmo_arancel, tmo_descripcion, tmo_valor, * from col_tmo_tipo_movimiento where tmo_arancel in ('D-281')
+
+--insert into cil_cpd_cuotas_pagar_diplomado (cpd_coddip, cpd_codtmo, cpd_orden, cpd_graduado_utec)
+--values (1036, 3681, 0, 1), (1036, 3682, 1, 1), (1036, 3682, 2, 1),
+--(1036, 3683, 0, 0), (1036, 3684, 1, 0), (1036, 3684, 2, 0),
+
+--(1037, 3680, 0, 0)--, (1033, 3630, 1, 0)
+
+
+-- 1038, SEMINARIO: CURSO ESPECIALIZADO SOBRE CAMPAÑAS DIGITALES Y GOOGLE ADWORDS
+	--Graduado UTEC
+	select tmo_arancel, tmo_descripcion, tmo_valor, * from col_tmo_tipo_movimiento where tmo_arancel in ('T-202', 'T-203')
+	--Externo UTEC
+	select tmo_arancel, tmo_descripcion, tmo_valor, * from col_tmo_tipo_movimiento where tmo_arancel in ('T-204', 'T-205')
+
+--1039, SEMINARIO: TALLER   COMERCIO ELECTRÓNICO A TRAVÉS DE LANDING PAGE
+	--Graduado UTEC
+	select tmo_arancel, tmo_descripcion, tmo_valor, * from col_tmo_tipo_movimiento where tmo_arancel in ('T-206', 'T-207')
+	--Externo UTEC
+	select tmo_arancel, tmo_descripcion, tmo_valor, * from col_tmo_tipo_movimiento where tmo_arancel in ('T-208', 'T-209')
+
+insert into cil_cpd_cuotas_pagar_diplomado (cpd_coddip, cpd_codtmo, cpd_orden, cpd_graduado_utec)
+values (1038, 3686, 0, 1), (1038, 3687, 1, 1), (1038, 3688, 0, 0), (1038, 3689, 1, 0),
+(1039, 3690, 0, 1), (1039, 3691, 1, 1), (1039, 3692, 0, 0), (1039, 3693, 1, 0)
+
 -- drop table cil_cpd_cuotas_pagar_diplomado
 create table cil_cpd_cuotas_pagar_diplomado (
 	cpd_codigo int primary key identity (1, 1),

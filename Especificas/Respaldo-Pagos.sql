@@ -1,6 +1,6 @@
 declare @tbls_referencias as table (tbls_rpe_num_referencia varchar(30))
 insert into @tbls_referencias (tbls_rpe_num_referencia) values 
-('74406751015101522980202')
+('74406751154115420957840')
 -- rpe_num_referencia es el bueno, pero hay que recortar las ultimos 12 caracteres
 
 --select * from user_rpe_resumen_pago_enlinea 
@@ -14,4 +14,4 @@ rpe_fecha_registro 'Fecha transaccion', rpe_npe 'NPE'
 from user_rpe_resumen_pago_enlinea 
 	inner join ra_per_personas on per_codigo = rpe_codper
 	inner join @tbls_referencias on rpe_num_referencia = substring(tbls_rpe_num_referencia, 12, len(tbls_rpe_num_referencia))
-order by tbls_rpe_num_referencia asc
+order by Autorizacion asc
