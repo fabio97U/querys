@@ -21,7 +21,7 @@ declare @car_codigo varchar(12)
 declare m_cursor cursor 
 for
 --select car_codigo  from ra_car_carreras where car_estado = 'A' and car_codfac = 8 -- and car_codigo = 25
-select car_codigo  from ra_car_carreras where car_estado = 'A' and car_codtde = 1
+select car_codigo  from ra_car_carreras where car_estado = 'A' and car_codtde = 1 --and car_codigo = 25
 open m_cursor 
  
 fetch next from m_cursor into @car_codigo
@@ -30,7 +30,7 @@ begin
     --select @car_codigo
 	print '@car_codigo: ' + cast(@car_codigo as varchar(12))
 	insert into @tabla_posibles_egresados (per_codigo,facultad, car_carrera,per_carnet,per_apellidos_nombres,per_correo_institucional,per_telefono,per_celular,per_sexo,per_email,per_direccion,materias_pasadas,total_materias,cum_limpio,horas_sociales,inscribio_inter_ciclo)
-	exec sp_estimado_egresados 2, 123, @car_codigo
+	exec sp_estimado_egresados 2, 125, @car_codigo
     fetch next from m_cursor into @car_codigo
 end      
 close m_cursor  
