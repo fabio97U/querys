@@ -17,7 +17,7 @@
 
 --INICIO: borrar alumnos ya con el descuento
 --DELETE
-declare @codcil int = 125
+declare @codcil int = 126
 select * 
 from col_detmen_detalle_tipo_mensualidad where detmen_codtpmenara in (
 select tpmenara_codigo from col_tpmenara_tipo_mensualidad_aranceles where tpmenara_codtipmen in (5, 6, 7)
