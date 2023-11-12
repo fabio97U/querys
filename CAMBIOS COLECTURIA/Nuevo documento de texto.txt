@@ -1,0 +1,25 @@
+Facturacion bancos
+
+La nueva linea se tiene que ver en:
+https://portalempresarial.utec.edu.sv/uonline/privado/reportes.aspx?reporte=rep_partida_contable_colecturia&filas=4&campo0=1&campo1=19/05/2022&campo2=19/05/2022&campo3=1
+
+Inserta el recibo 
+[dbo].[insertarecibo_banco]
+	Insertar el pago, tal cual es en linea...
+
+select top 5 * from col_mov_movimientos
+where mov_usuario in ('pagoNPE_agricola')
+order by mov_codigo desc
+
+select top 100 * from col_mov_movimientos
+where mov_recibo = '238775' and mov_lote = '22'
+
+
+Reporte de partida contable, modificar para que aparezcan las demas lineas 
+
+exec rep_partida_contable_colecturia 1, '19/05/2022','19/05/2022', 1    -- Ver consolidado cuenta contable
+
+
+Reunion 30/06/2022
+...
+Ver excel

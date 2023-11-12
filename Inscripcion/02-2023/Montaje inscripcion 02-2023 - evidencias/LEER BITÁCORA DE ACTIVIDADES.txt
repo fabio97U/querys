@@ -1,0 +1,7 @@
+1. La reunión inicio a las 20:00 p.m del día 10/07/2023.
+2. Se dimensiono servidores de base de datos, portal educativo y portal de inscripción
+3. Se realizaron los planes de mantenimiento respectivos a la BD
+4. Se reviso el certificado de seguridad y montaje de aplicación de inscripción
+5. Se realizaron los pasos de la "Bitacora inscripcion 02-2023.xlsx"
+6. Se realizaron pruebas a los sistemas para validar que todo fue montado correctamente
+7. Se realizo el montaje de inscripción 02-2023, todo el proceso finalizo con éxito a las 03:45 a.m del día 11/07/2023.

@@ -1,0 +1,3 @@
+Para recrear este scenario se tiene que restaurar la BD y depurar con la ayuda de la Ing. Ganuza los resultados
+
+192.168.1.52\E:\BD\uonline24112022-bdcaso-ingganuza-cambiocarrera.bak

@@ -20,7 +20,7 @@ join ra_mai_mat_inscritas on mai_codins = ins_codigo
 join ra_alc_alumnos_carrera on alc_codper = per.per_codigo
 join ra_pla_planes pla on pla.pla_codigo = alc_codpla
 
-where tde_codigo = 1 and ins_codcil = 123 and vst.per_tipo = 'U' and per.per_estado = 'A' and mai_estado <> 'R'
+where tde_codigo = 1 and ins_codcil = 126 and vst.per_tipo = 'U' and per.per_estado = 'A' and mai_estado <> 'R'
 --and per.per_codigo = 173386
 group by per.per_codigo, per.per_carnet, per.per_nombres_apellidos, pla.pla_n_mat, car_nombre
 

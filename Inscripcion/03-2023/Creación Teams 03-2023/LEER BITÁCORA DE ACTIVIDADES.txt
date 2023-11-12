@@ -1,0 +1,7 @@
+1. La reunión inicio a las 22:00 p.m del día 10/06/2023.
+2. Validamos que ya no hubiera más inscripciones de materias, se cerró la inscripción ordinaria.
+3. Validamos y depuramos la base de datos de inscritos.
+4. Habían 71 materias que requerían Teams y 4736 miembros, de todos los grupos ninguna tenía docente asignado.
+5. Validamos que el flujo estuviera correcto con la materia “032023_DEBAP11-D_01_Lu-Ma-Mie-Ju-Vi-18:00-20:00”.
+6. Alrededor de las 22:40 p.m. iniciamos con el equipo el proceso de matriculación y estuvimos auditando la creación de los grupos y solventar cualquier problema que se presentara con las cuentas.
+7. Se matricularon todos los usuarios del paso 4., todo el proceso finalizo con éxito a las 00:02 a.m.

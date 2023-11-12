@@ -17,7 +17,6 @@ select * from adm_usr_usuarios where usr_nombre like '%glenda%'
 --nombre
 --from dbo.col_tit_tiraje union select 21, '21 - Colecturia'
 
-
 insert into adm_rol_roles (rol_codigo, rol_role)
 values (187, 'Nuevo ingreso plaza mundo')
 
@@ -41,7 +40,7 @@ where b.mov_usuario = 'glenda.lopez' and b.mov_lote = tit_lote and tit_estado = 
 
 
 
-USE [uonline3]
+USE [uonline]
 GO
 /****** Object:  StoredProcedure [dbo].[rep_facturas_ingreso_sucursal]    Script Date: 17/8/2021 11:06:39 ******/
 SET ANSI_NULLS ON
@@ -71,6 +70,8 @@ begin
 		case 
 			when tit_codreg = 1 then 'Colecturia UTEC'
 			when tit_codreg = 2 then 'Metrocentrocentro'
+			when tit_codreg = 3 then 'Maestrias'
+			when tit_codreg = 4 then 'Plaza mundo'
             else 'Otro'
         end
     from col_tit_tiraje where tit_lote = @sucursal
@@ -148,13 +149,13 @@ begin
 end
 
 
--- =============================================
--- Author:      <>
--- Create date: <>
--- Last modify: <2020-04-12 02:16:28.960, Fabio>
--- Description: <Realiza la consulta a que colecturía pertenece un usuario cajero>
--- =============================================
--- col_buscar_role 'glenda.lopez', 187
+	-- =============================================
+	-- Author:      <>
+	-- Create date: <>
+	-- Last modify: <2020-04-12 02:16:28.960, Fabio>
+	-- Description: <Realiza la consulta a que "colecturía/sucursal" pertenece un usuario cajero>
+	-- =============================================
+	-- col_buscar_role 'katherine.garcia', 187
 ALTER procedure [dbo].[col_buscar_role] 
 (
 	@usr_usuario varchar(40), 
@@ -185,15 +186,15 @@ begin
 		set @rus_role = 3
 	end
 
-	if exists (select 1 from @roles where rol in (187)) --COLECTURIA MAESTRIAS
+	if exists (select 1 from @roles where rol in (187)) --COLECTURIA Nuevo ingreso plaza mundo
 	begin
 		set @rus_role = 4
 	end
-
+	PRINT '@rus_role ' + cast (@rus_role as varchar(5))
 end
 
 
-	-- exec col_siguinte_recibo 'glenda.lopez'
+	-- exec col_siguinte_recibo 'katherine.garcia'
 ALTER procedure [dbo].[col_siguinte_recibo]  
 	@usuario varchar(20) 
 as

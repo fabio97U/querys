@@ -580,6 +580,7 @@ select * from ra_sca_segunda_carrera where sca_codper_nuevacarrera = @codper
 select * from adm_cead_cuentas_error_ad where cead_codper = @codper
 select * from ma_alppabe_alumno_plan_pago where alppabe_codper = @codper
 select sni_per_codigo_asignado, * from ni_sni_solicitud_nuevo_ingreso where sni_per_codigo_asignado = @codper 
+select * from dip_ped_personas_dip where ped_codper = @codper --POR SI TIENE DIPLOMADO
 SELECT * from ra_per_personas where per_codigo = @codper
 
 select * from ni_snival_solicitud_nuevo_ingreo_valores

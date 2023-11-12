@@ -12,7 +12,7 @@ create table emer_enc_encuestas (
 )
 insert into emer_enc_encuestas
 (enc_nombre, enc_codpon, enc_codcil, enc_codtde, enc_objetivo, enc_fecha_inicio, enc_fecha_fin)
-values ('Cuestionario para evaluación del desempeño docente Ciclo 01-2020', 5, 122, 1, 'Evaluar la metodología implementada por la universidad para adaptar el proceso educativo durante la cuarentena.', '2020-05-24', '2020-06-10')
+values ('Cuestionario para evaluaciï¿½n del desempeï¿½o docente Ciclo 01-2020', 5, 122, 1, 'Evaluar la metodologï¿½a implementada por la universidad para adaptar el proceso educativo durante la cuarentena.', '2020-05-24', '2020-06-10')
 
 select * from emer_enc_encuestas
 
@@ -25,7 +25,7 @@ create table emer_grupe_grupos_estudio(
 	grupe_fecha_creacion datetime default getdate()
 )
 insert into emer_grupe_grupos_estudio (grupe_nombre, grupe_orden, grupe_codenc) values
-('INDICADOR  CONECTIVIDAD Y SERVICIOS WEB', 1, 1), ('INDICADOR CALIDAD DOCENTE', 2, 1), ('INDICADOR ORGANIZACIÓN DEL PROCESO DE ENSEÑANZA APRENDIZAJE', 3, 1), ('INDICADOR METODOLOGÍA', 4, 1), ('INDICADOR EVALUACIÓN DE LOS APRENDIZAJES', 5, 1)
+('INDICADOR  CONECTIVIDAD Y SERVICIOS WEB', 1, 1), ('INDICADOR CALIDAD DOCENTE', 2, 1), ('INDICADOR ORGANIZACIï¿½N DEL PROCESO DE ENSEï¿½ANZA APRENDIZAJE', 3, 1), ('INDICADOR METODOLOGï¿½A', 4, 1), ('INDICADOR EVALUACIï¿½N DE LOS APRENDIZAJES', 5, 1)
 select * from emer_grupe_grupos_estudio
 
 --drop table emer_tipp_tipo_preguntas
@@ -49,27 +49,27 @@ create table emer_pre_preguntas (
 	pre_fecha_creacion datetime default getdate()
 )
 insert into emer_pre_preguntas (pre_codtipp, pre_codgrupe, pre_orden_general, pre_orden, pre_pregunta) values
-(1, 1, 1, 1, '¿Desde qué dispositivo (s) accede a sus clases?'),
-(1, 1, 2, 2, '¿Desde qué lugar accede con más frecuencia a sus clases?'),
-(1, 1, 3, 3, '¿Qué tipo de internet posee para conectarse a sus clases? (responda si es internet residencial la velocidad que posee y si es a través de móvil que tipo)'),
-(1, 1, 4, 4, '¿Qué plataforma utiliza su maestro para la continuidad de sus clases?'),
-(1, 1, 5, 5, '¿La calidad de la conectividad que usted utiliza, es adecuada para el uso de los recursos digitales?.'),
-(1, 1, 6, 6, '¿Tiene dificultades para el ingreso a la plataforma y a los recursos que esta ofrece?:'),
-(1, 1, 7, 7, '¿Cuál plataforma considera  idónea para recibir sus clases?'),
+(1, 1, 1, 1, 'ï¿½Desde quï¿½ dispositivo (s) accede a sus clases?'),
+(1, 1, 2, 2, 'ï¿½Desde quï¿½ lugar accede con mï¿½s frecuencia a sus clases?'),
+(1, 1, 3, 3, 'ï¿½Quï¿½ tipo de internet posee para conectarse a sus clases? (responda si es internet residencial la velocidad que posee y si es a travï¿½s de mï¿½vil que tipo)'),
+(1, 1, 4, 4, 'ï¿½Quï¿½ plataforma utiliza su maestro para la continuidad de sus clases?'),
+(1, 1, 5, 5, 'ï¿½La calidad de la conectividad que usted utiliza, es adecuada para el uso de los recursos digitales?.'),
+(1, 1, 6, 6, 'ï¿½Tiene dificultades para el ingreso a la plataforma y a los recursos que esta ofrece?:'),
+(1, 1, 7, 7, 'ï¿½Cuï¿½l plataforma considera  idï¿½nea para recibir sus clases?'),
 
-(1, 2, 8, 1,'¿El contenido de las clases está acorde en cuanto a la cantidad de actividades o tareas asignadas?'),
-(1, 2, 9, 2,'Hasta el momento ¿Cómo evalúa el desempeño del docente?'),
-(1, 2, 10, 3, '¿El nivel de exigencia académica del docente está acorde a los contenidos de la materia?'),
-(1, 2, 11, 4, '¿Cómo considera la carga académica que el docente le asigna en esta materia?'),
-(1, 2, 12, 5, '¿El docente muestra dominio en el uso de tecnología o plataformas para impartir la clase?'),
-(2, 2, 13, 6, '¿Por qué medio de comunicación digital o plataforma recibe apoyo o retroalimentación del docente? (puede marcar más de una opción)'),
+(1, 2, 8, 1,'ï¿½El contenido de las clases estï¿½ acorde en cuanto a la cantidad de actividades o tareas asignadas?'),
+(1, 2, 9, 2,'Hasta el momento ï¿½Cï¿½mo evalï¿½a el desempeï¿½o del docente?'),
+(1, 2, 10, 3, 'ï¿½El nivel de exigencia acadï¿½mica del docente estï¿½ acorde a los contenidos de la materia?'),
+(1, 2, 11, 4, 'ï¿½Cï¿½mo considera la carga acadï¿½mica que el docente le asigna en esta materia?'),
+(1, 2, 12, 5, 'ï¿½El docente muestra dominio en el uso de tecnologï¿½a o plataformas para impartir la clase?'),
+(2, 2, 13, 6, 'ï¿½Por quï¿½ medio de comunicaciï¿½n digital o plataforma recibe apoyo o retroalimentaciï¿½n del docente? (puede marcar mï¿½s de una opciï¿½n)'),
 (2, 2, 14, 7, 'De las siguientes opciones, marque aquellas que el docente necesita mejorar en la forma de impartir sus clases:'),
 
-(1, 3, 15, 1, '¿Su docente desarrolla la clase en línea en el horario asignado?'),
+(1, 3, 15, 1, 'ï¿½Su docente desarrolla la clase en lï¿½nea en el horario asignado?'),
 
-(1, 4, 16, 1, 'Si el recurso lo permite, ¿con qué frecuencia el docente deja grabada su clase en las diferentes plataformas que utiliza?'),
+(1, 4, 16, 1, 'Si el recurso lo permite, ï¿½con quï¿½ frecuencia el docente deja grabada su clase en las diferentes plataformas que utiliza?'),
 
-(1, 5, 17, 1, '¿Qué plataforma o medio utiliza su docente para realizar las evaluaciones?')
+(1, 5, 17, 1, 'ï¿½Quï¿½ plataforma o medio utiliza su docente para realizar las evaluaciones?')
 select * from emer_pre_preguntas
 
 --drop table emer_tipo_tipo_opciones
@@ -79,7 +79,7 @@ create table emer_tipo_tipo_opciones (
 	tipo_descripcion varchar(255),
 	tipo_fecha_creacion datetime default getdate()
 )
-insert into emer_tipo_tipo_opciones (tipo_tipo, tipo_descripcion) values ('c', 'Es una opción de respuesta cerrada'), ('a', 'Es una opción de respuesta abierta')
+insert into emer_tipo_tipo_opciones (tipo_tipo, tipo_descripcion) values ('c', 'Es una opciï¿½n de respuesta cerrada'), ('a', 'Es una opciï¿½n de respuesta abierta')
 select * from emer_tipo_tipo_opciones
 
 --drop table emer_opc_opciones
@@ -90,7 +90,7 @@ create table emer_opc_opciones (
 	opc_fecha_creacion datetime default getdate()
 )
 insert into emer_opc_opciones (opc_codenc, opc_opcion) values
-(1, 'Laptop'), (1, 'PC de escritorio'), (1, 'Teléfono celular'), (1, 'Tablet'), (1, 'Otro:  ¿Cuál?'), (1, 'Hogar'), (1, 'Cyber café'), (1, 'Trabajo'), (1, 'Vecinos'), (1, 'Otra:  ¿Cuál?'), (1, 'Internet residencial'), (1, 'Datos Móviles'), (1, 'Moodle'), (1, 'Blackboard'), (1, 'Zoom'), (1, 'Google meet'), (1, 'Google class'), (1, 'Office 365 - Teams'), (1, 'Si'), (1, 'No'), (1, 'Siempre'), (1, 'A veces'), (1, 'Nunca'), (1, 'Excelente'), (1, 'Muy bueno'), (1, 'Bueno'), (1, 'Regular'), (1, 'Necesita mejorar'), (1, 'Mucha'), (1, 'Adecuada'), (1, 'Poca'), (1, 'Correo electrónico'), (1, 'Foro'), (1, 'Chat'), (1, 'Aula de apoyo'), (1, 'Metodología'), (1, 'Uso de recursos'), (1, 'Sistema de evaluación'), (1, 'Interacción con el estudiante'), (1, 'Office Forms'), (1, 'Google Forms'), (1, 'Cuestionario en aula virtual'), (1, 'Cuestionario o guías de trabajo enviadas por correo electrónico')
+(1, 'Laptop'), (1, 'PC de escritorio'), (1, 'Telï¿½fono celular'), (1, 'Tablet'), (1, 'Otro:  ï¿½Cuï¿½l?'), (1, 'Hogar'), (1, 'Cyber cafï¿½'), (1, 'Trabajo'), (1, 'Vecinos'), (1, 'Otra:  ï¿½Cuï¿½l?'), (1, 'Internet residencial'), (1, 'Datos Mï¿½viles'), (1, 'Moodle'), (1, 'Blackboard'), (1, 'Zoom'), (1, 'Google meet'), (1, 'Google class'), (1, 'Office 365 - Teams'), (1, 'Si'), (1, 'No'), (1, 'Siempre'), (1, 'A veces'), (1, 'Nunca'), (1, 'Excelente'), (1, 'Muy bueno'), (1, 'Bueno'), (1, 'Regular'), (1, 'Necesita mejorar'), (1, 'Mucha'), (1, 'Adecuada'), (1, 'Poca'), (1, 'Correo electrï¿½nico'), (1, 'Foro'), (1, 'Chat'), (1, 'Aula de apoyo'), (1, 'Metodologï¿½a'), (1, 'Uso de recursos'), (1, 'Sistema de evaluaciï¿½n'), (1, 'Interacciï¿½n con el estudiante'), (1, 'Office Forms'), (1, 'Google Forms'), (1, 'Cuestionario en aula virtual'), (1, 'Cuestionario o guï¿½as de trabajo enviadas por correo electrï¿½nico')
 select * from emer_opc_opciones
 
 --drop table emer_preopc_preguntas_opciones
@@ -191,6 +191,13 @@ create table emer_detenc_detalle_encuesta(
 	detenc_detalle varchar(1024)--Si es abierta se llenara
 )
 select * from emer_detenc_detalle_encuesta
+USE [uonline]
+GO
+/****** Object:  StoredProcedure [dbo].[sp_data_emer_encuestas]    Script Date: 18/3/2022 15:39:19 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 
 -- =============================================
 -- Author:      <Fabio>
@@ -199,7 +206,7 @@ select * from emer_detenc_detalle_encuesta
 -- =============================================
 -- sp_data_emer_encuestas 1, 1, 0, 0, 0
 -- sp_data_emer_encuestas 2, 0, 0, 0, 41405
-alter procedure sp_data_emer_encuestas 
+ALTER procedure [dbo].[sp_data_emer_encuestas] 
 	@opcion int = 0,
 	@codenc int = 0,
 	@codpon int = 0,
@@ -233,18 +240,35 @@ begin
 		inner join ra_esc_escuelas on esc_codigo = mat_codesc
 		where hpl_codigo = @codhpl
 	end
+
+	if @opcion = 3
+	begin
+		select mpmpg_orden hpl_codmat, mmpg_nombre mat_nombre, mpmpg_seccion hpl_descripcion, emp_nombres_apellidos, 'Maestrias' esc_nombre
+		from ma_mpmpg_modulo_por_maestria_proceso_graduacion
+			inner join pla_emp_empleado on emp_codigo = mpmpg_codemp
+			inner join ma_mmpg_modulo_maestria_proceso_graduacion on mmpg_codigo = mpmpg_codmmpg
+		where mpmpg_codigo = @codhpl
+	end
 end
+
 
 --drop type tbl_detenc
 create type tbl_detenc as table(codpre int, codopc int, detalle varchar(1024));
 
+USE [uonline]
+GO
+/****** Object:  StoredProcedure [dbo].[sp_emer_encuestas]    Script Date: 18/3/2022 15:39:39 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 -- =============================================
 -- Author:      <Fabio>
 -- Create date: <2020-05-25 23:45:09.797>
 -- Description: <Inserta la data para las encuestas hechas para la emergencia>
 -- =============================================
 -- sp_emer_encuestas 1, 1, default
-alter procedure sp_emer_encuestas 
+ALTER procedure [dbo].[sp_emer_encuestas] 
 	@opcion int = 0,
 	@codenc int = 0,
 	@codper int = 0,
@@ -270,6 +294,7 @@ begin
 end
 
 
+
 --SE AGREGO LA COLUMNA HPL_CODIGO EN EL SEGUNDO SELECT
 --web_ptl_consultanotas 173322, 122
 
@@ -292,17 +317,14 @@ end
 		--[respuestas de las preguntas cerradas (comentarios)]
 
 
-	-- =============================================
-	-- Author:      <Fabio>
-	-- Create date: <2020-05-28 15:26:04.300>
-	-- Description: <Devuelve la data de los resultados de la evaluacion docente>
-	-- =============================================
-	-- rep_resultados_evaluacion 1, 4, 2, 123, 0	--Detalle preguntas cerradas para una escuela
-	-- rep_resultados_evaluacion 1, 4, 2, 123, 3092 --Detalle preguntas cerradas para un empleado
-	-- rep_resultados_evaluacion 1, 4, 2, 123, 2436
-	-- rep_resultados_evaluacion 2, 4, 2, 123, 0	--Detalle preguntas abiertas para una escuela
-	-- rep_resultados_evaluacion 2, 4, 2, 123, 3092	--Detalle preguntas abiertas para un empleado
-	-- rep_resultados_evaluacion 2, 4, 2, 123, 2436
+USE [uonline]
+GO
+/****** Object:  StoredProcedure [dbo].[rep_resultados_evaluacion]    Script Date: 18/3/2022 15:40:21 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- rep_resultados_evaluacion 1, 4, 1, 126, 0
 ALTER procedure [dbo].[rep_resultados_evaluacion]
 	@opcion int = 0,
 	@codesc int = 0,
@@ -311,19 +333,28 @@ ALTER procedure [dbo].[rep_resultados_evaluacion]
 	@codemp int = 0
 as
 begin
-	
 	if @opcion = 1 --Resultados de las preguntas cerradas
 	begin
-		select concat('0', cil_codcic, '-', cil_anio) 'ciclo', hpl_codigo, hpl_codmat, mat_nombre, hpl_descripcion,
-			hpl_codemp, emp_nombres_apellidos, esc_nombre, fac_nombre,
+
+		declare @nota_hpl as table(
+			codhpl int,
+			nota float
+		)
+
+		insert into @nota_hpl
+		select v.hpl_codigo, v.nota from v_emer_notas_docentes v 
+		where v.hpl_codcil = @codcil 
+		and v.hpl_codesc = case when @codesc <> 0 then @codesc else v.hpl_codesc end
+
+		select concat('0', cil_codcic, '-', cil_anio) 'ciclo', h.hpl_codigo, hpl_codmat, mat_nombre, hpl_descripcion,
+			h.hpl_codemp, emp_nombres_apellidos, esc_nombre, fac_nombre,
 			grupe_orden, grupe_nombre, pre_orden_general, pre_pregunta, opc_opcion, count(1) cant,
-			(select COUNT(encenc_codper) from emer_encenc_encabezado_encuesta em where hpl_codigo = em.encenc_codhpl ) tot,--, '%' 'porcentaje'
+			(select COUNT(encenc_codper) from emer_encenc_encabezado_encuesta em where h.hpl_codigo = em.encenc_codhpl ) tot,--, '%' 'porcentaje'
 			(select count(ins_codper) from ra_ins_inscripcion
 					inner join ra_mai_mat_inscritas on mai_codins = ins_codigo
-					inner
-									  join ra_hpl_horarios_planificacion p on p.hpl_codigo = mai_codhpl
+					inner join ra_hpl_horarios_planificacion p on p.hpl_codigo = mai_codhpl
 					where p.hpl_codigo = h.hpl_codigo and mai_estado = 'I'
-							) ins
+			) ins, (select isnull(max(nota),0) from @nota_hpl where codhpl = h.hpl_codigo) nota
 		from emer_encenc_encabezado_encuesta
 			inner join ra_hpl_horarios_planificacion h on hpl_codigo = encenc_codhpl
 			inner join ra_esc_escuelas on esc_codigo = hpl_codesc
@@ -331,16 +362,14 @@ begin
 			inner join ra_mat_materias on mat_codigo = hpl_codmat
 			inner join pla_emp_empleado on emp_codigo = hpl_codemp
 			inner join ra_cil_ciclo on cil_codigo = hpl_codcil
-
 			inner join emer_detenc_detalle_encuesta on detenc_codencenc = encenc_codigo
 			inner join emer_pre_preguntas on pre_codigo = detenc_codpre
 			inner join emer_grupe_grupos_estudio on grupe_codigo = pre_codgrupe
 			inner join emer_opc_opciones on opc_codigo = detenc_codopc
 			inner join emer_enc_encuestas on enc_codigo = encenc_codenc
-		where hpl_codesc = @codesc and enc_codigo = @codenc and encenc_codcil = @codcil-- and emp_codigo = 4357
-				and((case when(hpl_codemp > 0 and @codemp > 0) then hpl_codemp else 0 end) = (case when @codemp > 0 then @codemp else 0 end))
-		group by cil_codcic, cil_anio, hpl_codigo, hpl_codmat, mat_nombre, hpl_descripcion, hpl_codemp ,emp_nombres_apellidos, esc_nombre, fac_nombre, 
-			
+		where h.hpl_codesc = @codesc and enc_codcil = @codcil-- and emp_codigo = 4357
+				and((case when(h.hpl_codemp > 0 and @codemp > 0) then h.hpl_codemp else 0 end) = (case when @codemp > 0 then @codemp else 0 end))
+		group by cil_codcic, cil_anio, h.hpl_codigo, hpl_codmat, mat_nombre, hpl_descripcion, h.hpl_codemp ,emp_nombres_apellidos, esc_nombre, fac_nombre, 			
 			grupe_orden, grupe_nombre, pre_orden_general, pre_pregunta, opc_opcion
 		order by mat_nombre, pre_orden_general asc
 
@@ -349,8 +378,7 @@ begin
 	if @opcion = 2--Resultados de las preguntas abiertas
 	begin
 		select concat('0', cil_codcic, '-', cil_anio) 'ciclo', hpl_codigo, hpl_codmat, mat_nombre, 
-			hpl_descripcion, hpl_codemp ,emp_nombres_apellidos, fac_nombre, esc_nombre, 
-			
+			hpl_descripcion, hpl_codemp ,emp_nombres_apellidos, fac_nombre, esc_nombre, 		
 			grupe_orden, grupe_nombre, pre_orden_general, pre_pregunta, opc_opcion, detenc_detalle, count(1) cant
 		from emer_encenc_encabezado_encuesta
 			inner join ra_hpl_horarios_planificacion on hpl_codigo = encenc_codhpl
@@ -359,25 +387,19 @@ begin
 			inner join ra_mat_materias on mat_codigo = hpl_codmat
 			inner join pla_emp_empleado on emp_codigo = hpl_codemp
 			inner join ra_cil_ciclo on cil_codigo = hpl_codcil
-
 			inner join emer_detenc_detalle_encuesta on detenc_codencenc = encenc_codigo
 			inner join emer_pre_preguntas on pre_codigo = detenc_codpre
 			inner join emer_grupe_grupos_estudio on grupe_codigo = pre_codgrupe
 			inner join emer_opc_opciones on opc_codigo = detenc_codopc
 			inner join emer_enc_encuestas on enc_codigo = encenc_codenc
-
-
 			inner join emer_preopc_preguntas_opciones on preopc_codpre = pre_codigo and preopc_codopc = opc_codigo
-		where hpl_codesc = @codesc and enc_codigo = @codenc and encenc_codcil = @codcil
+		where hpl_codesc = @codesc and enc_codcil = @codcil
 				and((case when(hpl_codemp > 0 and @codemp > 0) then hpl_codemp else 0 end) = (case when @codemp > 0 then @codemp else 0 end))
 				and preopc_codtipo = 2--RESPUESTAS ABIERTAS
 		group by cil_codcic, cil_anio, hpl_codigo, hpl_codmat, mat_nombre, 
 			hpl_descripcion, hpl_codemp ,emp_nombres_apellidos, fac_nombre, esc_nombre, 
-			
 			grupe_orden, grupe_nombre, pre_orden_general, pre_pregunta, opc_opcion, detenc_detalle
 		order by mat_nombre, pre_orden_general asc
-
-
 	end
 
 end
@@ -386,16 +408,20 @@ end
 
 
 
-
-
-
+USE [uonline]
+GO
+/****** Object:  StoredProcedure [dbo].[web_ceed_crear_evaluacion_estudiantil_docente_emergencia]    Script Date: 18/3/2022 15:40:44 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 -- =============================================
 	-- Author:      <Fabio>
 	-- Create date: <2020-10-08 16:45:38.107>
 	-- Description: <Migra la encuesta de "emergencia" de un ciclo a otro>
 	-- =============================================
 	-- web_ceed_crear_evaluacion_estudiantil_docente_emergencia 1, 1, 122, 123 -- Migra encuesta  de presencial pregrado del ciclo "@codcil_encuesta_origen" al "@codcil_encuesta_destino"
-alter procedure web_ceed_crear_evaluacion_estudiantil_docente_emergencia
+ALTER procedure [dbo].[web_ceed_crear_evaluacion_estudiantil_docente_emergencia]
 	@opcion int = 0,
 	@codtde int = 0,
 	@codcil_encuesta_origen int = 0,
