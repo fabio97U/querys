@@ -17,7 +17,7 @@
 
 --INICIO: borrar alumnos ya con el descuento
 --DELETE
-declare @codcil int = 131
+declare @codcil int = 134
 --select * 
 --from col_detmen_detalle_tipo_mensualidad where detmen_codtpmenara in (
 --select tpmenara_codigo from col_tpmenara_tipo_mensualidad_aranceles where tpmenara_codtipmen in (5, 6, 7)
@@ -89,7 +89,7 @@ end
 close m_cursor  
 deallocate m_cursor
 
-select * from @inscribieron_una -- 443, 458
+--select * from @inscribieron_una 
 --Fin: Solo les aparece una materia
 
 declare @codper_borrar_descuento int, @carnet_borrar_descuento varchar(20)

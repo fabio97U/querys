@@ -16,13 +16,13 @@ declare @tbl_hoja_asesoria as table (
 	mat_reprobadasciclo int, uv int, 
 	aul_nombre_corto varchar(60), mat_codesc int)
 
-declare @contador int = 1, @total int = 17539 
+declare @contador int = 1, @total int = 15384 
 declare @mvar varchar(12)--Variables del select
 declare m_cursor cursor 
 for
 	select ins_codper from ra_ins_inscripcion
 	inner join ra_per_personas on per_codigo = ins_codper
-	where ins_codcil = 129 and per_tipo = 'U' and per_estado in ('A')
+	where ins_codcil = 130 and per_tipo = 'U' and per_estado in ('A')
 	order by ins_codper
 open m_cursor
  
@@ -32,7 +32,7 @@ begin
 	print '******* codper: ' + cast(@mvar as varchar(30)) + ', '+ cast(@contador as varchar(30)) + '/'+ cast(@total as varchar(30)) + ' *******'
 
 	insert into @tbl_hoja_asesoria
-	exec dbo.web_ins_genasesoria 126, @mvar
+	exec dbo.web_ins_genasesoria 134, @mvar
 	set @contador = @contador + 1
     fetch next from m_cursor into @mvar
 end      

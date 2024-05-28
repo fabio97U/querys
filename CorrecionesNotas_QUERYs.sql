@@ -121,6 +121,7 @@ begin
 	end
 
 end
+go
 
 -- drop table ra_scornot_solictud_correccion_nota
 create table ra_scornot_solictud_correccion_nota (
@@ -131,17 +132,17 @@ create table ra_scornot_solictud_correccion_nota (
 	scornot_nota_actual real,
 	scornot_nota_solicitada real,
 	scornot_comentario_estudiante varchar(2048) null,
-
-	scornot_estado_director_escuela varchar(5) not null default 'PEN',-- 'DEN': denegado, 'PEN': Pendiente, 'APR': Aprobado
-	scornot_fecha_revision_director_escuela datetime null,
-	scornot_codusr_director_escuela int null,
-	scornot_comentario_director_escuela varchar(2048) null,
-
+	
 	scornot_estado_docente varchar(5) not null default 'PEN',-- 'DEN': denegado, 'PEN': Pendiente, 'APR': Aprobado
 	scornot_fecha_revision_docente datetime null,
 	scornot_codemp_docente int null,
 	scornot_comentario_docente varchar(2048) null,
 
+	scornot_estado_director_escuela varchar(5) not null default 'PEN',-- 'DEN': denegado, 'PEN': Pendiente, 'APR': Aprobado
+	scornot_fecha_revision_director_escuela datetime null,
+	scornot_codusr_director_escuela int null,
+	scornot_comentario_director_escuela varchar(2048) null,
+	
 	scornot_estado_administracion_academica varchar(5) not null default 'PEN',-- 'DEN': denegado, 'PEN': Pendiente, 'APR': Aprobado
 	scornot_fecha_revision_administracion_academica datetime null,
 	scornot_codusr_administracion_academica int null,
@@ -206,7 +207,7 @@ begin
 		where getdate() between pcnot_fecha_inicio and pcnot_fecha_fin
 			and pcnot_codtde = @codtde and pcnot_codpon = @codpon
 	)
-	declare @correo_para varchar(200) = ''
+	declare @correo_para varchar(1024) = ''
 
 	if @opcion = 0 --periodo de correcion de notas activo
 	begin
@@ -243,7 +244,7 @@ begin
 
 	if @opcion = 3 -- Nota actual de la materia
 	begin
-		-- exec dbo.sp_correccion_notas @opcion = 3, @codper = 168640, @codmai = 5643892, @codpon = 5
+		-- exec dbo.sp_correccion_notas @opcion = 3, @codper = 168640, @codmai = 5754235, @codpon = 1
 		declare @tbl_aranceles table (codtmo int)
 		declare @not_codigo int = 0, @not_nota real = 0.0, @bandera bit, @codhpl int = 0
 		declare @estaba_solvente bit = 0, @tiene_autorizacion_aa bit = 0, @tiene_prorroga bit = 0, @permitido bit = 1
@@ -272,6 +273,8 @@ begin
 		select @estaba_solvente = count (1) from col_dmo_det_mov inner join col_mov_movimientos on dmo_codmov = mov_codigo where mov_codper = @codper and dmo_codcil = @codcil and dmo_codtmo in (select codtmo from @tbl_aranceles) and convert(varchar(10), mov_fecha_real_pago ,103) <= @fecha_limite_pago and mov_estado <> 'A'
 		select @tiene_prorroga = count(1) from ra_pra_prorroga_acad  inner join ra_poo_prorroga_otorgar on pra_codpoo = poo_codigo where pra_codper = @codper and pra_codcil = @codcil and poo_codpon = @codpon
 		select @tiene_autorizacion_aa = count(1) from ra_aan_activar_alumno_notas where aan_codper = @codper and aan_codhpl = @codhpl and aan_periodo = @codpon
+		
+		--set @estaba_solvente = 1
 
 		if (@estaba_solvente = 0 and @tiene_autorizacion_aa = 0 and @tiene_prorroga = 0)
 		begin
@@ -304,15 +307,16 @@ begin
 
 		insert into ra_scornot_solictud_correccion_nota 
 		(scornot_codpcnot, scornot_codper, scornot_codnot, scornot_nota_actual, scornot_nota_solicitada, scornot_comentario_estudiante, scornot_codusr_creacion)
-		select @codpcnot, @codper, @codnot, @nota_actual, @nota_solicitada, @comentario, @codusr
+		select @codpcnot, @codper, @codnot, @nota_actual, null/*@nota_solicitada*/, @comentario, @codusr
 
 		select @codscornot = @@IDENTITY
 		insert into ra_doccornot_documentos_correccion_nota (doccornot_codscornot, doccornot_link_documento)
 		values (@codscornot, @url_evidencias)
-
-		select @correo_para = responsables_escuela from vst_correciones_nota where codscornot = @codscornot
 		
-		set @correo_para = 'william.colocho@utec.edu.sv'
+		--alumno,docente,director escuela
+		select @correo_para = concat(correo_estudiante, ';', correo_docente, ';', responsables_escuela) from vst_correciones_nota where codscornot = @codscornot
+		set @correo_para = 'fabio.ramos@utec.edu.sv'
+
 		select 1 'res', 'Solicitud de corrección de notas registrada con éxito' 'texto', @codscornot 'codigo', @correo_para 'correo_para'
 
 	end
@@ -341,7 +345,20 @@ begin
 		-- exec dbo.sp_correccion_notas @opcion = 6, @codscornot = 1, @estado = 'APR', @codusr = 378, @comentario = 'Aprobado', @url_evidencias = '', @cargado_por = 'DOC'
 		-- exec dbo.sp_correccion_notas @opcion = 6, @codscornot = 2, @estado = 'APR', @codusr = 378, @comentario = 'Aprobado', @url_evidencias = '', @cargado_por = 'AA', @nota_solicitada = 10, @codnot = 1
 
+		declare @correos_aa varchar(125) = 'william.colocho@utec.edu.sv;oscar.alvarado@utec.edu.sv'
 		-- DIR: Director, DOC: Docente, AA: Administracion Academica
+		if @cargado_por = 'DOC'
+		begin
+			update ra_scornot_solictud_correccion_nota set 
+				scornot_estado_docente = @estado,
+				scornot_fecha_revision_docente = getdate(),
+				scornot_codemp_docente = @codusr,
+				scornot_comentario_docente = @comentario,
+				scornot_nota_solicitada = @nota_solicitada
+			where scornot_codigo = @codscornot
+			select @correo_para = responsables_escuela from vst_correciones_nota where codscornot = @codscornot
+		end
+
 		if @cargado_por = 'DIR'
 		begin
 			update ra_scornot_solictud_correccion_nota set 
@@ -350,16 +367,7 @@ begin
 				scornot_codusr_director_escuela = @codusr,
 				scornot_comentario_director_escuela = @comentario
 			where scornot_codigo = @codscornot
-		end
-
-		if @cargado_por = 'DOC'
-		begin
-			update ra_scornot_solictud_correccion_nota set 
-				scornot_estado_docente = @estado,
-				scornot_fecha_revision_docente = getdate(),
-				scornot_codemp_docente = @codusr,
-				scornot_comentario_docente = @comentario
-			where scornot_codigo = @codscornot
+			set @correo_para = @correos_aa
 		end
 
 		if @cargado_por = 'AA'
@@ -372,6 +380,8 @@ begin
 			where scornot_codigo = @codscornot
 
 			update ra_not_notas set not_nota = @nota_solicitada where not_codigo = @codnot
+			
+			select @correo_para = concat(correo_estudiante, ';', correo_docente, ';', responsables_escuela, ';', @correos_aa) from vst_correciones_nota where codscornot = @codscornot
 		end
 
 		insert into  ra_doccornot_documentos_correccion_nota(doccornot_codscornot, doccornot_link_documento, doccornot_estado, doccornot_cargado_por, doccornot_comentario_documento)
@@ -379,8 +389,8 @@ begin
 
 		declare @estado_actual varchar(50) = ''
 		select @estado_actual = estado_general, @correo_para = responsables_escuela from vst_correciones_nota where codscornot = @codscornot
-
-		set @correo_para = 'william.colocho@utec.edu.sv'
+		
+		set @correo_para = 'fabio.ramos@utec.edu.sv'
 		select 1 'res', 'Solicitud de corrección de notas actualizada con éxito' 'texto', @codscornot 'codigo', @estado_actual 'estado_actual', @correo_para 'correo_para'
 	end
 
@@ -398,17 +408,18 @@ as
 	select scornot_codigo 'codscornot', 
 		case when scornot_activo = 0 then 'CANCELADO' 
 		when scornot_estado_director_escuela = 'APR' and scornot_estado_docente = 'APR' and scornot_estado_administracion_academica = 'APR' then 'APROBADO NOTA CORREGIDA'
-		when scornot_estado_director_escuela = 'DEN' then 'DENEGADO POR DIRECTOR'
 		when scornot_estado_docente = 'DEN' then 'DENEGADO POR DOCENTE'
+		when scornot_estado_director_escuela = 'DEN' then 'DENEGADO POR DIRECTOR'
 		when scornot_estado_administracion_academica = 'DEN' then 'DENEGADO POR ADMINISTRACION'
-		when scornot_estado_director_escuela = 'PEN' then 'EN REVISION POR DIRECTOR'
 		when scornot_estado_docente = 'PEN' then 'EN REVISION POR DOCENTE'
+		when scornot_estado_director_escuela = 'PEN' then 'EN REVISION POR DIRECTOR'
 		when scornot_estado_administracion_academica = 'PEN' then 'EN REVISION POR ADMINISTRACION'
 		else 'EN REVISION' end 'estado_general', 
 
 		case when scornot_estado_director_escuela = 'APR' and scornot_estado_docente = 'APR' and scornot_estado_administracion_academica = 'APR' then 'APROBADO NOTA CORREGIDA' 
-		when scornot_estado_director_escuela = 'APR' and scornot_estado_docente = 'PEN' then 'PENDIENTE REVISION DOCENTE'
-		when scornot_estado_director_escuela = 'APR' and scornot_estado_docente = 'APR' then 'APROBADO POR DOCENTE'
+		when scornot_estado_docente = 'APR' then 'APROBADO POR DOCENTE'
+		when scornot_estado_docente = 'PEN' then 'PENDIENTE REVISION DOCENTE'
+		when scornot_estado_director_escuela = 'APR' then 'APROBADO POR DIRECTOR'
 		else 'EN REVISION POR OTRA UNIDAD' end 'estado_docente_texto',
 
 		tde_nombre 'tipo_estudio', pcnot_codigo 'codpcnot', cil_codigo 'codcil', concat('0', cil_codcic, '-', cil_anio) 'ciclo', 
@@ -427,7 +438,7 @@ as
 		when scornot_fecha_revision_director_escuela is not null then scornot_fecha_revision_director_escuela 
 		when scornot_fecha_revision_docente is not null then scornot_fecha_revision_docente
 		when scornot_fecha_revision_administracion_academica is not null then scornot_fecha_revision_administracion_academica
-		else scornot_fecha_creacion end 'ultima_fecha_revision'
+		else scornot_fecha_creacion end 'ultima_fecha_revision', per_correo_institucional 'correo_estudiante'
 	from ra_scornot_solictud_correccion_nota scornot
 		inner join ra_pcnot_periodo_correccion_notas on pcnot_codigo = scornot_codpcnot
 		inner join ra_cil_ciclo on pcnot_codcil = cil_codigo
@@ -442,3 +453,5 @@ as
 		inner join ra_esc_escuelas on hpl_codesc = esc_codigo
 		inner join ra_fac_facultades on esc_codfac = fac_codigo
 		inner join pla_emp_empleado on hpl_codemp = emp_codigo
+go
+

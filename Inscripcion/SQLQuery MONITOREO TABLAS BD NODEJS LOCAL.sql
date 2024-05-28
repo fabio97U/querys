@@ -1,33 +1,33 @@
---exec web_ins_alumnos_listos_inscribir 1, 0, 131 -- Almacenar los alumnos aptos
+-- exec web_ins_alumnos_listos_inscribir 1, 0, 134 -- Almacenar los alumnos aptos
 exec dbo.web_ptl_login_ldap '5825762021', 133, 133
 exec dbo.web_ptl_login_info_fqdn '5825762021'
--- exec dbo.web_ins_genasesoria_con_matins_nodjs_azure 131, 216122		--hoja_inscripcion
+-- exec dbo.web_ins_genasesoria_con_matins_nodjs_azure 134, 216122		--hoja_inscripcion
 -- exec dbo.web_ins_cuposinserinscripcion_nodjs		--inscribir matererias
 -- exec dbo.web_mod_ins_cuposinserinscripcion_nodjs	--modificar materias
--- exec dbo.web_ins_matinscritas_nodjs 228835, 131				--comprobante de materias
+-- exec dbo.web_ins_matinscritas_nodjs 228835, 134				--comprobante de materias
 
 --1222723, 4969582
-select top 30 per_carnet, *
+select *
 --distinct SUBSTRING(per_carnet, 1, 2) 
 from dbo.ra_ins_inscripcion 
 --inner join dbo.ra_mai_mat_inscritas on ins_codigo = mai_codins
 inner join ra_per_personas on per_codigo = ins_codper
-where ins_codcil = 131 and ins_usuario_creacion = 'user.online'
+where ins_codcil = 134 --and ins_usuario_creacion = 'user.online'
+and per_tipo = 'U'
 order by ins_codigo desc
 
 --select top 10 * from ra_ins_bitcam_inscripcion_bitacora_cambios order by bitcam_codigo desc
---28104, 2020-07-15 00:36:11.703, 40638, 2020-07-15 17:10:13.131, 48307 2020-07-16 19:52:09.553
-select * from ins_errins_errores_inscrpcion with (nolock) where errins_codcil = 131 order by errins_fecha_creacion
+--28104, 2020-07-15 00:36:11.703, 40638, 2020-07-15 17:10:13.134, 48307 2020-07-16 19:52:09.553
+select * from ins_errins_errores_inscrpcion with (nolock) where errins_codcil = 134 order by errins_fecha_creacion
 --1, 7 2020-07-16 15:35:51.427
-select * from dbo.ra_ins_inscripcion where ins_codcil = 131 and ins_usuario_creacion = 'user.online' and ins_codigo <= 1361207
-select * from dbo.ra_ins_inscripcion where ins_codcil = 131 and ins_usuario_creacion = 'user.online' and ins_codigo > 1361207
-select * from dbo.ra_ins_inscripcion where ins_codcil = 131 and ins_usuario_creacion = 'user.online' and ins_codigo > 1362633
-select * from dbo.ra_ins_inscripcion where ins_codcil = 131 and ins_usuario_creacion = 'user.online' and ins_codigo > 1363926
-select * from dbo.ra_ins_inscripcion where ins_codcil = 131 and ins_usuario_creacion = 'user.online' and ins_codigo > 1365246
-select * from dbo.ra_ins_inscripcion where ins_codcil = 131 and ins_usuario_creacion = 'user.online' and ins_codigo > 1366342
-select * from dbo.ra_ins_inscripcion where ins_codcil = 131 and ins_usuario_creacion = 'user.online' and ins_codigo > 1371414
-select * from dbo.ra_ins_inscripcion where ins_codcil = 131 and ins_usuario_creacion = 'user.online' and ins_codigo > 1369654
-select * from dbo.ra_ins_inscripcion where ins_codcil = 131 and ins_usuario_creacion = 'user.online' and ins_codigo > 1373066
+select * from dbo.ra_ins_inscripcion where ins_codcil = 134 and ins_usuario_creacion = 'user.online' and ins_codigo > 1380008
+select * from dbo.ra_ins_inscripcion where ins_codcil = 134 and ins_usuario_creacion = 'user.online' and ins_codigo > 1381473
+select * from dbo.ra_ins_inscripcion where ins_codcil = 134 and ins_usuario_creacion = 'user.online' and ins_codigo > 1382903
+select * from dbo.ra_ins_inscripcion where ins_codcil = 134 and ins_usuario_creacion = 'user.online' and ins_codigo > 1384289
+select * from dbo.ra_ins_inscripcion where ins_codcil = 134 and ins_usuario_creacion = 'user.online' and ins_codigo > 1385705
+select * from dbo.ra_ins_inscripcion where ins_codcil = 134 and ins_usuario_creacion = 'user.online' and ins_codigo > 1386796
+select * from dbo.ra_ins_inscripcion where ins_codcil = 134 and ins_usuario_creacion = 'user.online' and ins_codigo > 1390488
+select * from dbo.ra_ins_inscripcion where ins_codcil = 134 and ins_usuario_creacion = 'user.online' and ins_codigo > 1393162
 --select * from ra_per_personas where per_codigo = 224240
 
 --status
@@ -79,7 +79,7 @@ SELECT fac, count(1) 'pagos_ra_validac', count(ins_codigo) 'inscritos', count(1)
 	inner join ra_car_carreras on car_codigo = pla_codcar
 	inner join ra_esc_escuelas on esc_codigo = car_codesc
 	inner join ra_fac_facultades on esc_codfac = fac_codigo
-	left join dbo.ra_ins_inscripcion on ins_codper = per_codigo and ins_codcil = 131
+	left join dbo.ra_ins_inscripcion on ins_codper = per_codigo and ins_codcil = 134
 ) T
 group by fac
 --12595
@@ -97,15 +97,16 @@ inner join ra_mat_materias on mat_codigo = mai_codmat
 left join ra_plm_planes_materias on plm_codpla = alc_codpla and mai_codmat = plm_codmat
 left join ra_validaciones_globales on rvg_codper = per_codigo
 left join ra_ins_bitcam_inscripcion_bitacora_cambios on bitcam_codper = per_codigo and bitcam_codhpl = mai_codhpl
-where mai_codpla <> alc_codpla and per_tipo = 'U' and ins_codcil = 131 --and alc_codper = 224535
---and ins_usuario_creacion = 'user.online'
---and isnull(plm_codmat, '') <> ''
+where mai_codpla <> alc_codpla and per_tipo = 'U' and ins_codcil = 134 --and alc_codper = 224535
+and ins_usuario_creacion = 'user.online'
+and isnull(plm_codmat, '') <> ''
+--and ins_codper = 228356
 order by ins_fecha_creacion asc
 --select * from dbo.ra_ins_bitcam_inscripcion_bitacora_cambios where bitcam_codper = 214490
 --select * from ra_alc_alumnos_carrera where alc_codper = @codper
 
 select * from ra_alc_alumnos_carrera where alc_codper = 224785
---exec web_ins_genasesoria 131, 209505
+--exec web_ins_genasesoria 134, 209505
 
 select mat_codigo, mat_nombre, hpl_descripcion, * from 
 ra_ins_bitcam_inscripcion_bitacora_cambios 
@@ -116,7 +117,7 @@ where bitcam_codper = 209505
 
 select * from dbo.ra_ins_inscripcion --where ins_codigo = 1222738
 inner join ra_per_personas on per_codigo = ins_codper
-where ins_codigo not in (select mai_codins from dbo.ra_mai_mat_inscritas) and ins_codcil = 131
+where ins_codigo not in (select mai_codins from dbo.ra_mai_mat_inscritas) and ins_codcil = 134
 and per_tipo = 'U'
 --and ins_codper in (228312, 228462, 228467, 228494, 228507, 228646, 228672, 228687, 228696, 228720, 228724, 228781, 228790, 228800, 228818, 228954, 229011, 229031, 229044, 229056, 229069, 229071, 229077, 229110, 229190, 229199, 229207, 229316, 229405, 229546, 229674, 229716, 229717, 229804, 229831, 229884, 229906, 229914, 229918, 229921)
 order by ins_fecha_creacion desc
@@ -125,29 +126,30 @@ order by ins_fecha_creacion desc
 
 select * from dbo.ra_mai_mat_inscritas
 	inner join dbo.ra_ins_inscripcion on mai_codins = ins_codigo
-where mai_codins not in (select i.ins_codigo from dbo.ra_ins_inscripcion i where i.ins_codcil = 131)
+where mai_codins not in (select i.ins_codigo from dbo.ra_ins_inscripcion i where i.ins_codcil = 134)
 and mai_codigo >= 5627170
 
 --MAS DE 5 CODMAI INSCRITAS
-select ins_codigo, ins_codper, per_carnet, count(1) from dbo.ra_ins_inscripcion
+select ins_codigo, alc_codpla, ins_codper, per_carnet, count(1) from dbo.ra_ins_inscripcion
 inner join dbo.ra_mai_mat_inscritas on mai_codins = ins_codigo
 inner join ra_per_personas on per_codigo = ins_codper
-where ins_codcil = 131 and ins_usuario_creacion = 'user.online'
+inner join ra_alc_alumnos_carrera on alc_codper = per_codigo
+where ins_codcil = 134 and ins_usuario_creacion = 'user.online'
 and mai_codpla not in (489, 490, 491)
-group by ins_codigo, ins_codper, per_carnet
+group by ins_codigo, alc_codpla, ins_codper, per_carnet
 having count(1) > 5
 
 select ins_codigo, ins_codper, count(1) from dbo.ra_ins_inscripcion
 inner join dbo.ra_mai_mat_inscritas_especial on mai_codins = ins_codigo
-where ins_codcil = 131 and ins_usuario_creacion = 'user.online'
+where ins_codcil = 134 and ins_usuario_creacion = 'user.online'
 group by ins_codigo, ins_codper
 having count(1) > 2
 
 select * from dbo.ra_ins_inscripcion 
 inner join ra_per_personas on per_codigo = ins_codper
 inner join ra_alc_alumnos_carrera on alc_codper = per_codigo
-where ins_codigo in (1263529)
+where ins_codigo in (1381203)
 order by ins_codigo
 
-select * from dbo.ra_mai_mat_inscritas where mai_codins in (1364063)
+select * from dbo.ra_mai_mat_inscritas where mai_codins in (1381203)
 order by mai_codins, mai_codigo

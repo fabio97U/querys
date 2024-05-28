@@ -33,14 +33,12 @@ create table col_econdte_encabezado_contigencia_dte (
 -- select * from col_econdte_encabezado_contigencia_dte
 --Los datos del responsable son los datos de la persona de TI que activa la contigencia
 insert into col_econdte_encabezado_contigencia_dte 
-(econdte_FInicio, econdte_HInicio, econdte_FFin, econdte_HFin, econdte_TipoContingencia_codcat005, econdte_MotivoContingencia, 
+(econdte_FInicio, econdte_HInicio, econdte_FFin, econdte_HFin, econdte_TipoContingencia_codcat005, 
+econdte_MotivoContingencia, 
 condte_codusr_creacion, econdte_telefono_emisor, econdte_tipo_establecimiento_emisor_codte009,
 econdte_nombre_responsable, econdte_codcodcat022_responsable, econdte_numero_documento_responsable)
-values ('2023-07-03', '21:20:00', '2023-07-03', '22:00:00', 5, 'Prueba de contigencia MH 1', 407, '2275-8888', '02',
-'Fabio Ernesto Ramos Reyes', '13', '05567057-5'), 
-('2023-07-03', '22:20:00', '2023-07-03', '23:00:00', 5, 'Prueba de contigencia MH 2', 407, '2275-8888', '02',
-'Fabio Ernesto Ramos Reyes', '13', '05567057-5'), 
-('2023-07-03', '23:00:00', '2023-07-03', '23:10:00', 5, 'Prueba de contigencia MH 3', 407, '2275-8888', '02',
+values ('2024-05-25', '00:01:00', '2024-05-25', '00:04:00', 1, 
+'Mantenimiento programado a los servicios de Facturación Electrónica del Ministerio de Hacienda el día 25 de mayo de 2024', 407, '2275-8888', '01',
 'Fabio Ernesto Ramos Reyes', '13', '05567057-5')
 
 -- drop table col_dcondte_detalle_contingencia_dte
@@ -57,11 +55,7 @@ create table col_dcondte_detalle_contingencia_dte (
 -- select * from col_dcondte_detalle_contingencia_dte
 -- Paso 2. Inserta los detalles de las facturas que fueron emitidas pero sin el sello
 insert into col_dcondte_detalle_contingencia_dte (dcondte_codecondte, dcondte_origen, dcondte_codigo_origen, dcondte_tipo_documento_codcat023, dcondte_codusr_creacion)
-values (1, 'mov', 7275102, '01', 407)
-insert into col_dcondte_detalle_contingencia_dte (dcondte_codecondte, dcondte_origen, dcondte_codigo_origen, dcondte_tipo_documento_codcat023, dcondte_codusr_creacion)
-values (2, 'mov', 7275101, '01', 407)
-insert into col_dcondte_detalle_contingencia_dte (dcondte_codecondte, dcondte_origen, dcondte_codigo_origen, dcondte_tipo_documento_codcat023, dcondte_codusr_creacion)
-values (3, 'mov', 7275099, '01', 407), (3, 'mov', 7275098, '01', 407), (3, 'mov', 7275097, '01', 407)
+values (1, 'mov', 7585087, '01', 407)
 
 -- Paso 3. Se realiza la asignacion masiva del codigo de generacion, ESTA CARGA MASIVA DEBERIA SER UNA OPCION Y CARGAR UN EXCEL MASIVO...
 --select mov_codigo_generacion, * from col_mov_movimientos where mov_codigo in (7275102,7275101,7275099,7275098,7275097)

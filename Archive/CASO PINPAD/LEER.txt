@@ -1,0 +1,1 @@
+Se cancelo la integracion por los dispositivos a los que se iba integrar no imprimen un comprobante, fue cancelado por colecturia
